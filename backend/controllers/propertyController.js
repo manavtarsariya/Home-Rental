@@ -1,8 +1,7 @@
 const Property = require('../models/Property')
 const User = require('../models/User')
 const mongoose = require('mongoose')
-const path = require('path')
-const fs = require('fs')
+const { cloudinary } = require('../middleware/upload')
 
 // Create property
 const createProperty = async (req, res) => {
@@ -82,7 +81,8 @@ const createProperty = async (req, res) => {
       if (req.files.photos) {
         req.files.photos.forEach(file => {
           photos.push({
-            filename: file.filename,
+            url: file.path, // Cloudinary URL
+            publicId: file.public_id, // Cloudinary public ID for deletion
             originalName: file.originalname,
             mimetype: file.mimetype,
             size: file.size
@@ -93,7 +93,8 @@ const createProperty = async (req, res) => {
       if (req.files.documents) {
         req.files.documents.forEach(file => {
           documents.push({
-            filename: file.filename,
+            url: file.path, // Cloudinary URL
+            publicId: file.public_id, // Cloudinary public ID for deletion
             originalName: file.originalname,
             mimetype: file.mimetype,
             size: file.size
@@ -284,7 +285,8 @@ const updateProperty = async (req, res) => {
     if (req.files) {
       if (req.files.newPhotos) {
         const newPhotos = req.files.newPhotos.map(file => ({
-          filename: file.filename,
+          url: file.path, // Cloudinary URL
+          publicId: file.public_id, // Cloudinary public ID for deletion
           originalName: file.originalname,
           mimetype: file.mimetype,
           size: file.size
@@ -294,7 +296,8 @@ const updateProperty = async (req, res) => {
 
       if (req.files.newDocuments) {
         const newDocuments = req.files.newDocuments.map(file => ({
-          filename: file.filename,
+          url: file.path, // Cloudinary URL
+          publicId: file.public_id, // Cloudinary public ID for deletion
           originalName: file.originalname,
           mimetype: file.mimetype,
           size: file.size
@@ -363,23 +366,29 @@ const deleteProperty = async (req, res) => {
       return res.status(403).json({ error: 'Access denied' })
     }
 
-    // Delete associated files
+    // Delete associated files from Cloudinary
     if (property.photos) {
-      property.photos.forEach(photo => {
-        const filePath = path.join(__dirname, '../uploads/properties', photo.filename)
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath)
+      for (const photo of property.photos) {
+        if (photo.publicId) {
+          try {
+            await cloudinary.uploader.destroy(photo.publicId)
+          } catch (error) {
+            console.error('Error deleting photo from Cloudinary:', error)
+          }
         }
-      })
+      }
     }
 
     if (property.documents) {
-      property.documents.forEach(doc => {
-        const filePath = path.join(__dirname, '../uploads/documents', doc.filename)
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath)
+      for (const doc of property.documents) {
+        if (doc.publicId) {
+          try {
+            await cloudinary.uploader.destroy(doc.publicId, { resource_type: 'raw' })
+          } catch (error) {
+            console.error('Error deleting document from Cloudinary:', error)
+          }
         }
-      })
+      }
     }
 
     await Property.findByIdAndDelete(id)

@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 const PropertyCard = ({ property }) => {
     const imageUrl =
         property.photos && property.photos.length > 0
-            ? property.photos[0].filename.startsWith('http')
+            ? property.photos[0].url || (property.photos[0].filename?.startsWith('http')
                 ? property.photos[0].filename
-                : `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/properties/${property.photos[0].filename}`
+                : `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/properties/${property.photos[0].filename}`)
             : null
 
     return (

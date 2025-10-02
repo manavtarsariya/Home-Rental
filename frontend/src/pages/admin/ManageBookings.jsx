@@ -199,9 +199,12 @@ const ManageBookings = () => {
             <div className="space-y-3">
               {booking.property?.photos && booking.property.photos.length > 0 && (
                 <img
-                  src={`/uploads/properties/${booking.property.photos[0].filename}`}
+                  src={booking.property.photos[0].url || `/uploads/properties/${booking.property.photos[0].filename}`}
                   alt={booking.property.title}
                   className="w-full h-32 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.src = '/placeholder.png'
+                  }}
                 />
               )}
               

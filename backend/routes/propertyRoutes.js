@@ -15,7 +15,12 @@ const router = express.Router();
 
 router.route('/')
   .get(getProperties)
-  .post(protect, authorize('Owner', 'Admin'), uploadPropertyFiles, createProperty);
+  .post(
+    protect,
+    authorize('Owner', 'Admin'),
+    uploadPropertyFiles,
+    createProperty
+  );
 
 router.get('/search', searchProperties);
 router.get('/owner/me', protect, authorize('Owner', 'Admin'), getOwnerProperties);

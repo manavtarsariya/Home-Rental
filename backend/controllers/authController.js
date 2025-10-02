@@ -111,6 +111,11 @@ const updateProfile = async (req, res, next) => {
       address: req.body.address
     };
 
+    // Handle profile image upload
+    if (req.file) {
+      fieldsToUpdate.profileImage = req.file.path; // Cloudinary URL
+    }
+
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
       new: true,
       runValidators: true

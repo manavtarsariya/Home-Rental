@@ -198,9 +198,12 @@ const ManageProperties = () => {
                   {property.photos.slice(0, 4).map((photo, index) => (
                     <img
                       key={index}
-                      src={`/uploads/properties/${photo.filename}`}
+                      src={photo.url || `/uploads/properties/${photo.filename}`}
                       alt={`Property ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.src = '/placeholder.png'
+                      }}
                     />
                   ))}
                 </div>
@@ -377,9 +380,12 @@ const ManageProperties = () => {
       <div className="relative">
         {property.photos && property.photos.length > 0 ? (
           <img
-            src={`/uploads/properties/${property.photos[0].filename}`}
+            src={property.photos[0].url || `/uploads/properties/${property.photos[0].filename}`}
             alt={property.title}
             className="w-full h-48 object-cover"
+            onError={(e) => {
+              e.target.src = '/placeholder.png'
+            }}
           />
         ) : (
           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">

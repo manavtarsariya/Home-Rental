@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import { useNavigate } from 'react-router-dom'
 import { propertyService } from '../../services/propertyService'
 import locationServiceLocal from '../../utils/locationServiceLocal'
@@ -552,19 +550,16 @@ const AddProperty = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Available From
               </label>
-              <DatePicker
-                selected={formData.availableFrom ? new Date(formData.availableFrom) : null}
-                onChange={date => {
-                  setFormData(prev => ({ ...prev, availableFrom: date ? date.toISOString().split('T')[0] : '' }))
-                }}
-                minDate={new Date()}
-                dateFormat="yyyy-MM-dd"
-                placeholderText="Select available from date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              <input
+                type="date"
                 name="availableFrom"
-                autoComplete="off"
-                showPopperArrow={false}
+                value={formData.availableFrom}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                  errors.availableFrom ? 'border-red-300' : 'border-gray-300'
+                }`}
               />
+              {errors.availableFrom && <p className="text-red-500 text-sm mt-1">{errors.availableFrom}</p>}
             </div>
 
             <div className="md:col-span-2">

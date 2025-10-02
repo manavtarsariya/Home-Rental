@@ -1,75 +1,88 @@
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    let uploadPath = 'uploads/';
-    
-    // Determine upload path based on fieldname
-    if (file.fieldname === 'photos') {
-      uploadPath += 'properties/';
-    } else if (file.fieldname === 'documents') {
-      uploadPath += 'documents/';
-    } else if (file.fieldname === 'profileImage') {
-      uploadPath += 'profiles/';
-    } else if (file.fieldname === 'maintenanceImages') {
-      uploadPath += 'maintenance/';
-    }
-    
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    // Create unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+
+// Single Cloudinary storage for both images and documents
+const propertyStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    if (file.fieldname === 'documents') {
+      return {
+        folder: 'documents',
+        allowed_formats: ['pdf', 'doc', 'docx'],
+        resource_type: 'raw',
+      };
+    }
+    // Default to images
+    let folder = 'properties';
+    if (file.fieldname === 'profileImage') folder = 'profiles';
+    if (file.fieldname === 'maintenanceImages') folder = 'maintenance';
+    return {
+      folder,
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+      resource_type: 'image',
+    };
+  },
+});
+
 
 // File filter function
 const fileFilter = (req, file, cb) => {
-  // Check file type
-  if (file.fieldname === 'photos' || file.fieldname === 'maintenanceImages' || file.fieldname === 'profileImage') {
-    // Allow only images
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed for photos'), false);
-    }
+  if (
+    file.fieldname === 'photos' ||
+    file.fieldname === 'maintenanceImages' ||
+    file.fieldname === 'profileImage'
+  ) {
+    if (file.mimetype.startsWith('image/')) cb(null, true);
+    else cb(new Error('Only image files are allowed for photos'), false);
   } else if (file.fieldname === 'documents') {
-    // Allow documents (PDF, DOC, DOCX)
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only PDF and Word documents are allowed'), false);
-    }
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (allowedTypes.includes(file.mimetype)) cb(null, true);
+    else cb(new Error('Only PDF and Word documents are allowed'), false);
   } else {
     cb(new Error('Invalid field name'), false);
   }
 };
 
-// Configure multer
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: process.env.MAX_FILE_SIZE || 5000000, // 5MB default
-  },
-  fileFilter: fileFilter
-});
 
-// Middleware for different upload types
-const uploadPropertyFiles = upload.fields([
+// Combined uploader for both images and documents using single storage
+const uploadPropertyFiles = multer({
+  storage: propertyStorage,
+  fileFilter,
+  limits: { fileSize: process.env.MAX_FILE_SIZE || 5000000 },
+}).fields([
   { name: 'photos', maxCount: 10 },
   { name: 'documents', maxCount: 5 }
 ]);
 
-const uploadSingle = upload.single('profileImage');
-const uploadMaintenanceImages = upload.array('maintenanceImages', 5);
+
+const uploadSingle = multer({
+  storage: propertyStorage,
+  fileFilter,
+  limits: { fileSize: process.env.MAX_FILE_SIZE || 5000000 },
+}).single('profileImage');
+
+const uploadMaintenanceImages = multer({
+  storage: propertyStorage,
+  fileFilter,
+  limits: { fileSize: process.env.MAX_FILE_SIZE || 5000000 },
+}).array('maintenanceImages', 5);
 
 module.exports = {
-  upload,
   uploadPropertyFiles,
   uploadSingle,
-  uploadMaintenanceImages
+  uploadMaintenanceImages,
+  cloudinary,
 };

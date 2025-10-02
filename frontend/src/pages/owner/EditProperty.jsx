@@ -658,11 +658,14 @@ const EditProperty = () => {
               {property.photos.map((photo, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={`/uploads/properties/${photo.filename}`}
+                    src={photo.url || `/uploads/properties/${photo.filename}`}
                     alt={`Property ${index + 1}`}
                     className={`w-full h-32 object-cover rounded-lg ${
                       photosToRemove.includes(photo._id) ? 'opacity-50 grayscale' : ''
                     }`}
+                    onError={(e) => {
+                      e.target.src = '/placeholder.png'
+                    }}
                   />
                   {photosToRemove.includes(photo._id) ? (
                     <button

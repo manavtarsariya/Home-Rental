@@ -79,8 +79,9 @@ const propertySchema = new mongoose.Schema({
     formattedAddress: String
   },
   photos: [{
-    filename: String,
-    path: String,
+    url: String, // Cloudinary URL
+    publicId: String, // Cloudinary public ID for deletion
+    originalName: String,
     size: Number,
     mimetype: String,
     uploadedAt: {
@@ -89,8 +90,9 @@ const propertySchema = new mongoose.Schema({
     }
   }],
   documents: [{
-    filename: String,
-    path: String,
+    url: String, // Cloudinary URL
+    publicId: String, // Cloudinary public ID for deletion
+    originalName: String,
     size: Number,
     mimetype: String,
     documentType: {

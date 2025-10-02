@@ -110,9 +110,12 @@ const MyProperties = () => {
       <div className="relative">
         {property.photos && property.photos.length > 0 ? (
           <img
-            src={`/uploads/properties/${property.photos[0].filename}`}
+            src={property.photos[0].url || `/uploads/properties/${property.photos[0].filename}`}
             alt={property.title}
             className="w-full h-48 object-cover"
+            onError={(e) => {
+              e.target.src = '/placeholder.png'
+            }}
           />
         ) : (
           <div className="w-full h-48 bg-gray-200 flex items-center justify-center">

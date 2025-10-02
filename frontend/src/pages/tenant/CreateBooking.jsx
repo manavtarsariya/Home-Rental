@@ -162,9 +162,12 @@ const CreateBooking = () => {
             <h2 className="font-semibold text-lg mb-4">Property Summary</h2>
             {property.photos?.length > 0 ? (
               <img
-                src={`/uploads/properties/${property.photos[0].filename}`}
+                src={property.photos[0].url || `/uploads/properties/${property.photos[0].filename}`}
                 alt={property.title}
                 className="w-full h-40 object-cover rounded-lg mb-4"
+                onError={(e) => {
+                  e.target.src = '/placeholder.png'
+                }}
               />
             ) : (
               <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center mb-4">

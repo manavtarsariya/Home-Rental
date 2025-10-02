@@ -305,9 +305,12 @@ const PropertyDetails = () => {
           <div className="relative">
             {property.photos && property.photos.length > 0 ? (
               <img
-                src={`/uploads/properties/${property.photos[currentImageIndex]?.filename}`}
+                src={property.photos[currentImageIndex]?.url || `/uploads/properties/${property.photos[currentImageIndex]?.filename}`}
                 alt={property.title}
                 className="w-full h-96 object-cover rounded-lg"
+                onError={(e) => {
+                  e.target.src = '/placeholder.png'
+                }}
               />
             ) : (
               <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -340,10 +343,13 @@ const PropertyDetails = () => {
             {property.photos && property.photos.slice(1, 5).map((photo, index) => (
               <img
                 key={index}
-                src={`/uploads/properties/${photo.filename}`}
+                src={photo.url || `/uploads/properties/${photo.filename}`}
                 alt={`${property.title} ${index + 2}`}
                 className="w-full h-44 object-cover rounded-lg cursor-pointer hover:opacity-75"
                 onClick={() => setCurrentImageIndex(index + 1)}
+                onError={(e) => {
+                  e.target.src = '/placeholder.png'
+                }}
               />
             ))}
           </div>
@@ -873,7 +879,7 @@ const PropertyDetails = () => {
                 <div className="relative h-48 bg-gray-200">
                   {similarProperty.photos && similarProperty.photos.length > 0 ? (
                     <img
-                      src={`/uploads/properties/${similarProperty.photos[0].filename}`}
+                      src={similarProperty.photos[0].url || `/uploads/properties/${similarProperty.photos[0].filename}`}
                       alt={similarProperty.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
