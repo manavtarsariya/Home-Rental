@@ -20,7 +20,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout()
     navigate('/')
-    setIsProfileMenuOpen(false)
+    setIsProfileMenuOpen(false) 
   }
 
   const getDashboardLink = () => {
