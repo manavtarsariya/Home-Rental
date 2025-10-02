@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import { useNavigate } from 'react-router-dom'
 import { propertyService } from '../../services/propertyService'
+import locationServiceLocal from '../../utils/locationServiceLocal'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import {
   PhotoIcon,
@@ -26,7 +29,7 @@ const AddProperty = () => {
       city: '',
       state: '',
       zipCode: '',
-      country: 'India'
+      country: ''
     },
     area: '',
     type: 'Apartment',
@@ -39,6 +42,111 @@ const AddProperty = () => {
     amenities: [],
     availableFrom: ''
   })
+
+  // Location dropdown state
+  const [countryOptions, setCountryOptions] = useState([])
+  const [stateOptions, setStateOptions] = useState([])
+  const [cityOptions, setCityOptions] = useState([])
+
+  // For select values (store id for country/state/city)
+  const [selectedCountryId, setSelectedCountryId] = useState('')
+  const [selectedStateId, setSelectedStateId] = useState('')
+  const [selectedCityId, setSelectedCityId] = useState('')
+
+  // Load countries on mount
+  useEffect(() => {
+    (async () => {
+      const countries = await locationServiceLocal.getCountries()
+      setCountryOptions(countries)
+    })()
+  }, [])
+
+  // When country changes, load states
+  useEffect(() => {
+    if (selectedCountryId) {
+      (async () => {
+        const states = await locationServiceLocal.getStates(selectedCountryId)
+        setStateOptions(states)
+        setCityOptions([])
+        setSelectedStateId('')
+        setSelectedCityId('')
+        setFormData(prev => ({
+          ...prev,
+          address: {
+            ...prev.address,
+            country: countryOptions.find(c => String(c.id) === String(selectedCountryId))?.name || '',
+            state: '',
+            city: ''
+          }
+        }))
+      })()
+    } else {
+      setStateOptions([])
+      setCityOptions([])
+      setSelectedStateId('')
+      setSelectedCityId('')
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          country: '',
+          state: '',
+          city: ''
+        }
+      }))
+    }
+  }, [selectedCountryId, countryOptions])
+
+  // When state changes, load cities
+  useEffect(() => {
+    if (selectedStateId) {
+      (async () => {
+        const cities = await locationServiceLocal.getCities(selectedStateId)
+        setCityOptions(cities)
+        setSelectedCityId('')
+        setFormData(prev => ({
+          ...prev,
+          address: {
+            ...prev.address,
+            state: stateOptions.find(s => String(s.id) === String(selectedStateId))?.name || '',
+            city: ''
+          }
+        }))
+      })()
+    } else {
+      setCityOptions([])
+      setSelectedCityId('')
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          state: '',
+          city: ''
+        }
+      }))
+    }
+  }, [selectedStateId, stateOptions])
+
+  // When city changes, update address.city
+  useEffect(() => {
+    if (selectedCityId) {
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          city: cityOptions.find(c => String(c.id) === String(selectedCityId))?.name || ''
+        }
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          city: ''
+        }
+      }))
+    }
+  }, [selectedCityId, cityOptions])
 
   const [errors, setErrors] = useState({})
 
@@ -444,13 +552,18 @@ const AddProperty = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Available From
               </label>
-              <input
-                type="date"
-                name="availableFrom"
-                value={formData.availableFrom}
-                onChange={handleChange}
+              <DatePicker
+                selected={formData.availableFrom ? new Date(formData.availableFrom) : null}
+                onChange={date => {
+                  setFormData(prev => ({ ...prev, availableFrom: date ? date.toISOString().split('T')[0] : '' }))
+                }}
+                minDate={new Date()}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select available from date"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                min={new Date().toISOString().split('T')[0]}
+                name="availableFrom"
+                autoComplete="off"
+                showPopperArrow={false}
               />
             </div>
 
@@ -479,8 +592,8 @@ const AddProperty = () => {
             <MapPinIcon className="w-6 h-6 mr-2" />
             Address Information
           </h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Street Address *
@@ -497,41 +610,66 @@ const AddProperty = () => {
               />
               {errors['address.street'] && <p className="text-red-500 text-sm mt-1">{errors['address.street']}</p>}
             </div>
+           
 
+            {/* Country Select */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                City *
-              </label>
-              <input
-                type="text"
-                name="address.city"
-                value={formData.address.city}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors['address.city'] ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Mumbai"
-              />
-              {errors['address.city'] && <p className="text-red-500 text-sm mt-1">{errors['address.city']}</p>}
+              <label className="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+              <select
+                name="address.country"
+                value={selectedCountryId}
+                onChange={e => setSelectedCountryId(e.target.value)}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.country'] ? 'border-red-300' : 'border-gray-300'}`}
+              >
+                <option value="">Select Country</option>
+                {countryOptions.map(country => (
+                  <option key={country.id} value={country.id}>{country.name}</option>
+                ))}
+              </select>
+              {errors['address.country'] && <p className="text-red-500 text-sm mt-1">{errors['address.country']}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                State *
-              </label>
-              <input
-                type="text"
-                name="address.state"
-                value={formData.address.state}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors['address.state'] ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Maharashtra"
-              />
-              {errors['address.state'] && <p className="text-red-500 text-sm mt-1">{errors['address.state']}</p>}
-            </div>
+            {/* State Select (show only if country selected) */}
+            {selectedCountryId && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                <select
+                  name="address.state"
+                  value={selectedStateId}
+                  onChange={e => setSelectedStateId(e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.state'] ? 'border-red-300' : 'border-gray-300'}`}
+                  disabled={!stateOptions.length}
+                >
+                  <option value="">Select State</option>
+                  {stateOptions.map(state => (
+                    <option key={state.id} value={state.id}>{state.name}</option>
+                  ))}
+                </select>
+                {errors['address.state'] && <p className="text-red-500 text-sm mt-1">{errors['address.state']}</p>}
+              </div>
+            )}
 
+            {/* City Select (show only if state selected) */}
+            {selectedStateId && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">District / City *</label>
+                <select
+                  name="address.city"
+                  value={selectedCityId}
+                  onChange={e => setSelectedCityId(e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.city'] ? 'border-red-300' : 'border-gray-300'}`}
+                  disabled={!cityOptions.length}
+                >
+                  <option value="">Select City</option>
+                  {cityOptions.map(city => (
+                    <option key={city.id} value={city.id}>{city.name}</option>
+                  ))}
+                </select>
+                {errors['address.city'] && <p className="text-red-500 text-sm mt-1">{errors['address.city']}</p>}
+              </div>
+            )}
+
+            {/* Zip Code Last */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 ZIP Code *
@@ -549,20 +687,6 @@ const AddProperty = () => {
                 maxLength="6"
               />
               {errors['address.zipCode'] && <p className="text-red-500 text-sm mt-1">{errors['address.zipCode']}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Country
-              </label>
-              <input
-                type="text"
-                name="address.country"
-                value={formData.address.country}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50"
-                readOnly
-              />
             </div>
           </div>
         </div>

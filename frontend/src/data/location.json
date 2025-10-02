@@ -1,0 +1,72 @@
+{
+  "countries": [
+    { "id": 1, "name": "India" },
+    { "id": 2, "name": "United States" },
+    { "id": 3, "name": "United Kingdom" }
+  ],
+  "states": [
+    { "id": 101, "country_id": 1, "name": "Maharashtra" },
+    { "id": 102, "country_id": 1, "name": "Gujarat" },
+    { "id": 103, "country_id": 1, "name": "Karnataka" },
+    { "id": 104, "country_id": 1, "name": "Delhi" },
+    
+    { "id": 201, "country_id": 2, "name": "California" },
+    { "id": 202, "country_id": 2, "name": "Texas" },
+    { "id": 203, "country_id": 2, "name": "New York" },
+    { "id": 204, "country_id": 2, "name": "Florida" },
+    
+    { "id": 301, "country_id": 3, "name": "England" },
+    { "id": 302, "country_id": 3, "name": "Scotland" },
+    { "id": 303, "country_id": 3, "name": "Wales" },
+    { "id": 304, "country_id": 3, "name": "Northern Ireland" }
+  ],
+  "cities": [
+    { "id": 1001, "state_id": 101, "name": "Mumbai" },
+    { "id": 1002, "state_id": 101, "name": "Pune" },
+    { "id": 1003, "state_id": 101, "name": "Nagpur" },
+    
+    { "id": 1004, "state_id": 102, "name": "Ahmedabad" },
+    { "id": 1005, "state_id": 102, "name": "Surat" },
+    { "id": 1006, "state_id": 102, "name": "Vadodara" },
+    
+    { "id": 1007, "state_id": 103, "name": "Bengaluru" },
+    { "id": 1008, "state_id": 103, "name": "Mysuru" },
+    { "id": 1009, "state_id": 103, "name": "Mangaluru" },
+    
+    { "id": 1010, "state_id": 104, "name": "New Delhi" },
+    { "id": 1011, "state_id": 104, "name": "Dwarka" },
+    { "id": 1012, "state_id": 104, "name": "Rohini" },
+
+    { "id": 2001, "state_id": 201, "name": "Los Angeles" },
+    { "id": 2002, "state_id": 201, "name": "San Francisco" },
+    { "id": 2003, "state_id": 201, "name": "San Diego" },
+    
+    { "id": 2004, "state_id": 202, "name": "Houston" },
+    { "id": 2005, "state_id": 202, "name": "Dallas" },
+    { "id": 2006, "state_id": 202, "name": "Austin" },
+    
+    { "id": 2007, "state_id": 203, "name": "New York City" },
+    { "id": 2008, "state_id": 203, "name": "Buffalo" },
+    { "id": 2009, "state_id": 203, "name": "Rochester" },
+    
+    { "id": 2010, "state_id": 204, "name": "Miami" },
+    { "id": 2011, "state_id": 204, "name": "Orlando" },
+    { "id": 2012, "state_id": 204, "name": "Tampa" },
+
+    { "id": 3001, "state_id": 301, "name": "London" },
+    { "id": 3002, "state_id": 301, "name": "Manchester" },
+    { "id": 3003, "state_id": 301, "name": "Birmingham" },
+    
+    { "id": 3004, "state_id": 302, "name": "Edinburgh" },
+    { "id": 3005, "state_id": 302, "name": "Glasgow" },
+    { "id": 3006, "state_id": 302, "name": "Aberdeen" },
+    
+    { "id": 3007, "state_id": 303, "name": "Cardiff" },
+    { "id": 3008, "state_id": 303, "name": "Swansea" },
+    { "id": 3009, "state_id": 303, "name": "Newport" },
+    
+    { "id": 3010, "state_id": 304, "name": "Belfast" },
+    { "id": 3011, "state_id": 304, "name": "Derry" },
+    { "id": 3012, "state_id": 304, "name": "Lisburn" }
+  ]
+}

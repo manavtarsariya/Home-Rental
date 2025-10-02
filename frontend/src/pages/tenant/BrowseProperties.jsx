@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import locationServiceLocal from '../../utils/locationServiceLocal'
 import { Link, useSearchParams } from 'react-router-dom'
 import { propertyService } from '../../services/propertyService'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
@@ -12,6 +13,7 @@ import {
   StarIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
+import PropertyCard from '../../components/PropertyCard'
 
 const BrowseProperties = () => {
   const [properties, setProperties] = useState([])
@@ -22,8 +24,9 @@ const BrowseProperties = () => {
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
-    city: searchParams.get('city') || '',
+    country: searchParams.get('country') || '',
     state: searchParams.get('state') || '',
+    city: searchParams.get('city') || '',
     type: searchParams.get('type') || '',
     minRent: searchParams.get('minRent') || '',
     maxRent: searchParams.get('maxRent') || '',
@@ -32,12 +35,112 @@ const BrowseProperties = () => {
     amenities: searchParams.get('amenities') || '',
   })
 
+  const [tempFilters, setTempFilters] = useState({
+    search: searchParams.get('search') || '',
+    country: searchParams.get('country') || '',
+    state: searchParams.get('state') || '',
+    city: searchParams.get('city') || '',
+    type: searchParams.get('type') || '',
+    minRent: searchParams.get('minRent') || '',
+    maxRent: searchParams.get('maxRent') || '',
+    bedrooms: searchParams.get('bedrooms') || '',
+    furnished: searchParams.get('furnished') || '',
+    amenities: searchParams.get('amenities') || '',
+  })
+
+  // Location dropdown state
+  const [countryOptions, setCountryOptions] = useState([])
+  const [stateOptions, setStateOptions] = useState([])
+  const [cityOptions, setCityOptions] = useState([])
+
+  // For select values (store id for country/state/city)
+  const [selectedCountryId, setSelectedCountryId] = useState('')
+  const [selectedStateId, setSelectedStateId] = useState('')
+  const [selectedCityId, setSelectedCityId] = useState('')
+
+  // Load countries on mount
+  useEffect(() => {
+    (async () => {
+      const countries = await locationServiceLocal.getCountries()
+      setCountryOptions(countries)
+    })()
+  }, [])
+
+  // When country changes, load states
+  useEffect(() => {
+    if (selectedCountryId) {
+      (async () => {
+        const states = await locationServiceLocal.getStates(selectedCountryId)
+        setStateOptions(states)
+        setCityOptions([])
+        setSelectedStateId('')
+        setSelectedCityId('')
+        setTempFilters(prev => ({
+          ...prev,
+          country: countryOptions.find(c => String(c.id) === String(selectedCountryId))?.name || '',
+          state: '',
+          city: ''
+        }))
+      })()
+    } else {
+      setStateOptions([])
+      setCityOptions([])
+      setSelectedStateId('')
+      setSelectedCityId('')
+      setTempFilters(prev => ({
+        ...prev,
+        country: '',
+        state: '',
+        city: ''
+      }))
+    }
+  }, [selectedCountryId, countryOptions])
+
+  // When state changes, load cities
+  useEffect(() => {
+    if (selectedStateId) {
+      (async () => {
+        const cities = await locationServiceLocal.getCities(selectedStateId)
+        setCityOptions(cities)
+        setSelectedCityId('')
+        setTempFilters(prev => ({
+          ...prev,
+          state: stateOptions.find(s => String(s.id) === String(selectedStateId))?.name || '',
+          city: ''
+        }))
+      })()
+    } else {
+      setCityOptions([])
+      setSelectedCityId('')
+      setTempFilters(prev => ({
+        ...prev,
+        state: '',
+        city: ''
+      }))
+    }
+  }, [selectedStateId, stateOptions])
+
+  // When city changes, update tempFilters.city
+  useEffect(() => {
+    if (selectedCityId) {
+      setTempFilters(prev => ({
+        ...prev,
+        city: cityOptions.find(c => String(c.id) === String(selectedCityId))?.name || ''
+      }))
+    } else {
+      setTempFilters(prev => ({
+        ...prev,
+        city: ''
+      }))
+    }
+  }, [selectedCityId, cityOptions])
+
   const propertyTypes = ['Apartment', 'Villa', 'PG', 'House', 'Flat', 'Studio', 'Duplex']
   const bedroomOptions = ['1', '2', '3', '4', '5+']
   const furnishedOptions = ['Fully Furnished', 'Semi Furnished', 'Unfurnished']
 
   useEffect(() => {
-    setFilters({
+    const newFilters = {
       search: searchParams.get('search') || '',
       city: searchParams.get('city') || '',
       state: searchParams.get('state') || '',
@@ -47,7 +150,9 @@ const BrowseProperties = () => {
       bedrooms: searchParams.get('bedrooms') || '',
       furnished: searchParams.get('furnished') || '',
       amenities: searchParams.get('amenities') || '',
-    })
+    }
+    setFilters(newFilters)
+    setTempFilters(newFilters)
   }, [searchParams])
 
   const fetchProperties = useCallback(async () => {
@@ -86,7 +191,16 @@ const BrowseProperties = () => {
   }, [fetchProperties])
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+    setTempFilters(prev => ({ ...prev, [key]: value }))
+  }
+
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    const params = new URLSearchParams()
+    Object.keys(tempFilters).forEach(key => {
+      if (tempFilters[key]) params.set(key, tempFilters[key])
+    })
+    setSearchParams(params)
   }
 
   const handleSearch = (e) => {
@@ -99,7 +213,7 @@ const BrowseProperties = () => {
   }
 
   const clearFilters = () => {
-    setFilters({
+    const emptyFilters = {
       search: '',
       city: '',
       state: '',
@@ -109,90 +223,10 @@ const BrowseProperties = () => {
       bedrooms: '',
       furnished: '',
       amenities: '',
-    })
+    }
+    setFilters(emptyFilters)
+    setTempFilters(emptyFilters)
     setSearchParams({})
-  }
-
-  const PropertyCard = ({ property }) => {
-    const imageUrl =
-      property.photos && property.photos.length > 0
-        ? property.photos[0].filename.startsWith('http')
-          ? property.photos[0].filename
-          : `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'}/uploads/properties/${property.photos[0].filename}`
-        : null
-
-    return (
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <div className="relative">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={property.title}
-              className="w-full h-48 object-cover"
-              onError={(e) => { e.target.src = 'https://via.placeholder.com/400x200?text=No+Image' }}
-            />
-          ) : (
-            <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-              <HomeIcon className="w-12 h-12 text-gray-400" />
-            </div>
-          )}
-
-          <div className="absolute top-3 left-3">
-            <span className="bg-primary-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-              {property.type}
-            </span>
-          </div>
-
-          <div className="absolute top-3 right-3">
-            <span className="bg-white text-gray-800 px-2 py-1 rounded-full text-xs font-medium shadow">
-              {property.bedrooms} BHK
-            </span>
-          </div>
-
-          {!property.isAvailable && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
-                Not Available
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="p-4">
-          <div className="flex items-start justify-between mb-2">
-            <h3 className="text-lg font-semibold text-gray-900 truncate pr-2">{property.title}</h3>
-            <div className="flex items-center text-sm text-yellow-500">
-              <StarIcon className="w-4 h-4 fill-current mr-1" />
-              <span>{property.rating?.average || 0}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center text-gray-600 mb-3">
-            <MapPinIcon className="w-4 h-4 mr-1" />
-            <span className="text-sm truncate">{property.address?.city}, {property.address?.state}</span>
-          </div>
-
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center text-primary-600 font-semibold">
-              <CurrencyRupeeIcon className="w-5 h-5" />
-              <span className="text-lg">{property.rent?.toLocaleString()}</span>
-              <span className="text-sm text-gray-500 ml-1">/month</span>
-            </div>
-            <span className="text-sm text-gray-500">{property.area} sq ft</span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">{property.furnished} • {property.preferredTenants}</div>
-            <Link
-              to={`/properties/${property._id}`}
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors duration-200"
-            >
-              View Details
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -211,25 +245,15 @@ const BrowseProperties = () => {
               <input
                 type="text"
                 placeholder="Search properties..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                value={filters.search}
+                className="w-full pl-10 pr-4 py-2 border text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                value={tempFilters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-              />
-            </div>
-
-            <div>
-              <input
-                type="text"
-                placeholder="City"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                value={filters.city}
-                onChange={(e) => handleFilterChange('city', e.target.value)}
               />
             </div>
 
             <div className="flex space-x-2">
               <button type="submit" className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200">Search</button>
-              <button type="button" onClick={() => setShowFilters(!showFilters)} className="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center">
+              <button type="button" onClick={() => setShowFilters(!showFilters)} className="border text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center">
                 <FunnelIcon className="w-4 h-4 mr-1" /> Filters
               </button>
             </div>
@@ -237,23 +261,116 @@ const BrowseProperties = () => {
 
           {showFilters && (
             <div className="border-t border-gray-200 pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <input type="text" placeholder="State" value={filters.state} onChange={(e) => handleFilterChange('state', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" />
-              <select value={filters.type} onChange={(e) => handleFilterChange('type', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-                <option value="">All Types</option>
-                {propertyTypes.map(type => <option key={type} value={type}>{type}</option>)}
-              </select>
-              <select value={filters.bedrooms} onChange={(e) => handleFilterChange('bedrooms', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-                <option value="">Any</option>
-                {bedroomOptions.map(bed => <option key={bed} value={bed === '5+' ? '5' : bed}>{bed}</option>)}
-              </select>
-              <select value={filters.furnished} onChange={(e) => handleFilterChange('furnished', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-                <option value="">Any</option>
-                {furnishedOptions.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
+
+              {/* Country Select */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                <select
+                  value={selectedCountryId}
+                  onChange={e => setSelectedCountryId(e.target.value)}
+                  className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="">Select Country</option>
+                  {countryOptions.map(country => (
+                    <option key={country.id} value={country.id}>{country.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* State Select (show only if country selected) */}
+              {selectedCountryId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                  <select
+                    value={selectedStateId}
+                    onChange={e => setSelectedStateId(e.target.value)}
+                    className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    disabled={!stateOptions.length}
+                  >
+                    <option value="">Select State</option>
+                    {stateOptions.map(state => (
+                      <option key={state.id} value={state.id}>{state.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* City Select (show only if state selected) */}
+              {selectedStateId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <select
+                    value={selectedCityId}
+                    onChange={e => setSelectedCityId(e.target.value)}
+                    className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    disabled={!cityOptions.length}
+                  >
+                    <option value="">Select City</option>
+                    {cityOptions.map(city => (
+                      <option key={city.id} value={city.id}>{city.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
+                <select value={tempFilters.type} onChange={(e) => handleFilterChange('type', e.target.value)} className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option value="">All Types</option>
+                  {propertyTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
+
+
+              {/* Price Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price Range (₹)</label>
+                <div className="flex space-x-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={tempFilters.minRent}
+                    onChange={e => handleFilterChange('minRent', e.target.value)}
+                    placeholder="Min Price"
+                    className="w-1/2 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-500"
+                  />
+                  <span className="self-center text-gray-400">-</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={tempFilters.maxRent}
+                    onChange={e => handleFilterChange('maxRent', e.target.value)}
+                    placeholder="Max Price"
+                    className="w-1/2 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-500"
+                  />
+                </div>
+              </div>
+
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
+                <select value={tempFilters.bedrooms} onChange={(e) => handleFilterChange('bedrooms', e.target.value)} className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option value="">Bedrooms</option>
+                  {bedroomOptions.map(bed => <option key={bed} value={bed === '5+' ? '5' : bed}>{bed}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Furnishing</label>
+                <select value={tempFilters.furnished} onChange={(e) => handleFilterChange('furnished', e.target.value)} className="w-full px-3 py-2 text-gray-500 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option value="">Furniture</option>
+                  {furnishedOptions.map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
+              <div className="col-span-4 flex justify-end space-x-3 mt-4">
+                <button type="button" onClick={applyFilters} className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                  Apply Filters
+                </button>
+                <button type="button" onClick={clearFilters} className="text-gray-600 px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                  Clear Filters
+                </button>
+              </div>
             </div>
           )}
-
-          {showFilters && <button type="button" onClick={clearFilters} className="text-sm text-gray-600 mt-4 hover:text-gray-800">Clear all filters</button>}
         </form>
       </div>
 
