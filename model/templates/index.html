@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Rent Prediction</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #333;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🏠 Rent Price Prediction</h2>
+    <form action="/predict" method="POST">
+
+      <label>BHK</label>
+      <input type="number" name="BHK" placeholder="Enter BHK (e.g., 2)" required>
+
+      <label>Main Locality</label>
+      <select name="Main_Locality" required>
+        <option value="">-- Select Locality --</option>
+        <option value="pal">Pal</option>
+        <option value="palanpur">Palanpur</option>
+        <option value="vesu">Vesu</option>
+        <option value="adajan">Adajan</option>
+        <option value="bhatar">Bhatar</option>
+        <option value="varachha">Varachha</option>
+        <option value="udhna">Udhna</option>
+        <option value="katargam">Katargam</option>
+      </select>
+
+      <label>Square Feet</label>
+      <input type="number" name="Sqft" placeholder="Enter total area (e.g., 1200)" required>
+
+      <button type="submit">Predict Rent</button>
+    </form>
+
+    <!-- Show the prediction result -->
+    {% if prediction_text %}
+      <div class="result">{{ prediction_text }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
