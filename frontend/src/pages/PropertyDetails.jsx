@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { propertyService } from '../services/propertyService'
 import { feedbackService } from '../services/feedbackService'
+import { reportService } from '../services/reportService'
+import Modal from '../components/common/Modal'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import {
   MapPinIcon,
@@ -65,6 +67,51 @@ const PropertyDetails = () => {
     message: ''
   })
   const [similarProperties, setSimilarProperties] = useState([])
+  // Report modal state
+  const [isReportOpen, setIsReportOpen] = useState(false)
+  const [reportCategory, setReportCategory] = useState('')
+  const [reportDetails, setReportDetails] = useState('')
+  const [reportSubmitting, setReportSubmitting] = useState(false)
+
+  const openReport = () => {
+    if (!user) {
+      toast.error('Please login to report this listing')
+      navigate('/login')
+      return
+    }
+    setIsReportOpen(true)
+  }
+
+  const closeReport = () => {
+    setIsReportOpen(false)
+    setReportCategory('')
+    setReportDetails('')
+  }
+
+  const handleSubmitReport = async (e) => {
+    e?.preventDefault?.()
+    if (!reportCategory || !reportDetails.trim()) {
+      toast.error('Please select a category and enter details')
+      return
+    }
+    try {
+      setReportSubmitting(true)
+      await reportService.submitReport({
+        propertyId: property?._id,
+        ownerId: property?.owner?._id || property?.owner?._id?.$oid, // support populated or id
+        tenantId: user?._id || user?.id, // reporter tenant id
+        category: reportCategory,
+        details: reportDetails.trim(),
+      })
+      toast.success('Report submitted. Our team will review it shortly.')
+      closeReport()
+    } catch (err) {
+      const message = err?.response?.data?.message || 'Failed to submit report'
+      toast.error(message)
+    } finally {
+      setReportSubmitting(false)
+    }
+  }
 
   // Helper function to get amenity icon
   const getAmenityIcon = (amenity) => {
@@ -787,6 +834,12 @@ const PropertyDetails = () => {
                         </p>
                       </div>
                     )}
+                    <button
+                      onClick={openReport}
+                      className="w-full mt-2 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors duration-200 px-4 py-2 rounded-lg font-medium"
+                    >
+                      Report
+                    </button>
                   </div>
                 )}
               </>
@@ -800,6 +853,61 @@ const PropertyDetails = () => {
 
 
           </div>
+          {/* Report Modal */}
+          <Modal isOpen={isReportOpen} onClose={closeReport} title="Report Listing" size="small">
+            <form className="space-y-4" onSubmit={handleSubmitReport}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Report Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={reportCategory}
+                  onChange={(e) => setReportCategory(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option value="Inaccurate Information">Inaccurate Information</option>
+                  <option value="Fraud or Scam">Fraud or Scam</option>
+                  <option value="Spam or Advertising">Spam or Advertising</option>
+                  <option value="Harassment or Safety">Harassment or Safety</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Details <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={reportDetails}
+                  onChange={(e) => setReportDetails(e.target.value)}
+                  rows={4}
+                  required
+                  placeholder="Describe the issue you encountered"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900 placeholder-gray-400"
+                />
+                <p className="text-xs text-gray-400 mt-1">Please avoid sharing sensitive information. Our team may contact you for more details.</p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeReport}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={reportSubmitting}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-60"
+                >
+                  {reportSubmitting ? 'Submitting...' : 'Submit Report'}
+                </button>
+              </div>
+            </form>
+          </Modal>
           <div className="bg-white border mt-6 border-gray-200 rounded-lg p-6 sticky top-24 shadow-lg">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">

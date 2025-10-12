@@ -37,8 +37,17 @@ const Navbar = () => {
     }
   }
 
-const currentUserStr = localStorage.getItem('currentuser');
-const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const currentUserStr = localStorage.getItem('currentuser')
+  const currentUser = (() => {
+    if (!currentUserStr) return null
+    try {
+      return JSON.parse(currentUserStr)
+    } catch {
+      return null
+    }
+  })()
+  // Safely derive the role from either localStorage or auth context
+  const derivedRole = currentUser?.role || user?.role || null
 // console.log(currentUser)
 
   const isActive = (path) => {
@@ -66,7 +75,7 @@ const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-          { currentUser.role !== "Owner" && currentUser.role !== "Admin" &&  <Link
+          { derivedRole !== "Owner" && derivedRole !== "Admin" &&  <Link
               to="/"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${location.pathname === '/'
                   ? 'text-primary-600 bg-primary-50'
@@ -75,7 +84,7 @@ const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
             >
               Home
             </Link>}
-           { currentUser.role !== "Owner"&& currentUser.role !== "Admin" && <Link
+           { derivedRole !== "Owner"&& derivedRole !== "Admin" && <Link
               to="/properties"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/properties')
                   ? 'text-primary-600 bg-primary-50'
@@ -89,7 +98,7 @@ const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
               <>
                 <Link
                   to={getDashboardLink()}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive(`/${user.role.toLowerCase()}`)
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive(`/${(user?.role || '').toLowerCase()}`)
                       ? 'text-primary-600 bg-primary-50'
                       : 'text-gray-700 hover:text-primary-600'
                     }`}

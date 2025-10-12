@@ -353,10 +353,13 @@ const AdminDashboard = () => {
             <span className="text-gray-700 font-semibold">Manage Bookings</span>
           </Link>
           
-          <button className="flex items-center justify-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+          <Link
+            to="/admin/reports"
+            className="flex items-center justify-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+          >
             <ChartBarIcon className="w-8 h-8 text-gray-600 mr-2" />
             <span className="text-gray-700 font-semibold">View Reports</span>
-          </button>
+          </Link>
         </div>
       </div>
 

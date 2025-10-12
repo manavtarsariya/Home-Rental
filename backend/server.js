@@ -14,6 +14,7 @@ const bookingRoutes = require('./routes/bookingRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
 const feedbackRoutes = require('./routes/feedbackRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const reportRoutes = require('./routes/reportRoutes')
 
 // Import middleware
 const errorHandler = require('./middleware/error')
@@ -81,6 +82,7 @@ app.use('/api/bookings', bookingRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/reports', reportRoutes)
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {

@@ -24,6 +24,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageUsers from './pages/admin/ManageUsers'
 import ManageProperties from './pages/admin/ManageProperties'
 import ManageBookings from './pages/admin/ManageBookings'
+import AdminReports from './pages/admin/AdminReports'
 
 // Owner Pages
 import OwnerDashboard from './pages/owner/OwnerDashboard'
@@ -96,6 +97,11 @@ function App() {
                 <Route path="admin/bookings" element={
                   <ProtectedRoute allowedRoles={['Admin']}>
                     <ManageBookings />
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/reports" element={
+                  <ProtectedRoute allowedRoles={['Admin']}>
+                    <AdminReports />
                   </ProtectedRoute>
                 } />
 

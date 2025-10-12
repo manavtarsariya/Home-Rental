@@ -143,7 +143,15 @@ const Home = () => {
   const [faqOpen, setFaqOpen] = useState(null);
 
   const currentUserStr = localStorage.getItem('currentuser');
-  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const currentUser = (() => {
+    if (!currentUserStr) return null;
+    try {
+      return JSON.parse(currentUserStr);
+    } catch {
+      return null;
+    }
+  })();
+  const currentRole = currentUser?.role || user?.role || null;
   const navigate = useNavigate()
 
   // if(currentUser.role === "Owner"){
@@ -151,9 +159,9 @@ const Home = () => {
   // }
 
   useEffect(() => {
-    if (currentUser.role === "Owner") {
+    if (currentRole === "Owner") {
       navigate("/owner/dashboard")
-    }else if( currentUser.role === "Admin"){
+    }else if( currentRole === "Admin"){
       navigate("/admin/dashboard")
       }
     const fetchProperties = async () => {
@@ -166,7 +174,7 @@ const Home = () => {
       }
     };
     fetchProperties();
-  }, [currentUser.role, navigate]);
+  }, [currentRole, navigate]);
 
   const handleSearchChange = e => {
     setSearch({ ...search, [e.target.name]: e.target.value });

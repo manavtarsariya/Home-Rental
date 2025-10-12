@@ -41,6 +41,7 @@ const Sidebar = () => {
           { icon: UserGroupIcon, label: 'Manage Users', path: '/admin/users' },
           { icon: BuildingOfficeIcon, label: 'Manage Properties', path: '/admin/properties' },
           { icon: CalendarIcon, label: 'Manage Bookings', path: '/admin/bookings' },
+          { icon: ChartBarIcon, label: 'Manage Reports', path: '/admin/reports' },
           // { icon: ChartBarIcon, label: 'Analytics', path: '/admin/analytics' },
         ]
       
