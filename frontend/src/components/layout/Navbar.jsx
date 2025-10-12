@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
@@ -20,7 +20,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout()
     navigate('/')
-    setIsProfileMenuOpen(false) 
+    setIsProfileMenuOpen(false)
   }
 
   const getDashboardLink = () => {
@@ -37,9 +37,20 @@ const Navbar = () => {
     }
   }
 
+const currentUserStr = localStorage.getItem('currentuser');
+const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+// console.log(currentUser)
+
   const isActive = (path) => {
     return location.pathname.startsWith(path)
   }
+
+  // useEffect(()=>{
+  //   if(currentUser.role === "Owner"){
+  //     // navigate("/owner/dashboard")
+  //   }
+  // },[currentUser.role, navigate])
+
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -55,36 +66,33 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
+          { currentUser.role !== "Owner" && currentUser.role !== "Admin" &&  <Link
               to="/"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === '/' 
-                  ? 'text-primary-600 bg-primary-50' 
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${location.pathname === '/'
+                  ? 'text-primary-600 bg-primary-50'
                   : 'text-gray-700 hover:text-primary-600'
-              }`}
+                }`}
             >
               Home
-            </Link>
-            <Link
+            </Link>}
+           { currentUser.role !== "Owner"&& currentUser.role !== "Admin" && <Link
               to="/properties"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/properties') 
-                  ? 'text-primary-600 bg-primary-50' 
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive('/properties')
+                  ? 'text-primary-600 bg-primary-50'
                   : 'text-gray-700 hover:text-primary-600'
-              }`}
+                }`}
             >
               Properties
-            </Link>
+            </Link>}
 
             {user ? (
               <>
                 <Link
                   to={getDashboardLink()}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(`/${user.role.toLowerCase()}`) 
-                      ? 'text-primary-600 bg-primary-50' 
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive(`/${user.role.toLowerCase()}`)
+                      ? 'text-primary-600 bg-primary-50'
                       : 'text-gray-700 hover:text-primary-600'
-                  }`}
+                    }`}
                 >
                   Dashboard
                 </Link>
@@ -97,9 +105,9 @@ const Navbar = () => {
                   >
                     <img
                       className="h-8 w-8 rounded-full object-cover"
-                      src={user.profileImage?.startsWith('http') 
-                        ? user.profileImage 
-                        : user.profileImage 
+                      src={user.profileImage?.startsWith('http')
+                        ? user.profileImage
+                        : user.profileImage
                           ? `/uploads/profiles/${user.profileImage}`
                           : 'https://via.placeholder.com/32x32?text=U'
                       }

@@ -297,13 +297,13 @@ const MyBookings = () => {
       </div>
 
       {/* Filter */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 text-black">
         <div className="flex items-center space-x-4">
           <label className="text-sm font-medium text-gray-700">Filter by status:</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="All">All Status</option>
             <option value="Pending">Pending</option>

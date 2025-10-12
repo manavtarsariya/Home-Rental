@@ -268,7 +268,7 @@ const EditProfile = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="hidden"
+                    className="hidden "
                   />
                 </div>
                 <div className="ml-4">
@@ -293,7 +293,7 @@ const EditProfile = () => {
                   name="name"
                   value={profileData.name}
                   onChange={handleProfileChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  className={`w-full px-3 text-black py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                     errors.name ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Enter your full name"
@@ -310,7 +310,7 @@ const EditProfile = () => {
                   name="email"
                   value={profileData.email}
                   onChange={handleProfileChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  className={`w-full text-black px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Enter your email address"
@@ -327,7 +327,7 @@ const EditProfile = () => {
                   name="contactNumber"
                   value={profileData.contactNumber}
                   onChange={handleProfileChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  className={`w-full text-black px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                     errors.contactNumber ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="+91-9876543210"
@@ -349,7 +349,7 @@ const EditProfile = () => {
                     name="address.street"
                     value={profileData.address.street}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 text-black py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter street address"
                   />
                 </div>
@@ -363,7 +363,7 @@ const EditProfile = () => {
                     name="address.city"
                     value={profileData.address.city}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full text-black px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter city"
                   />
                 </div>
@@ -377,7 +377,7 @@ const EditProfile = () => {
                     name="address.state"
                     value={profileData.address.state}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 text-black py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter state"
                   />
                 </div>
@@ -391,7 +391,7 @@ const EditProfile = () => {
                     name="address.zipCode"
                     value={profileData.address.zipCode}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 text-black py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter zip code"
                   />
                 </div>
@@ -405,7 +405,7 @@ const EditProfile = () => {
                     name="address.country"
                     value={profileData.address.country}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter country"
                   />
                 </div>
@@ -436,7 +436,7 @@ const EditProfile = () => {
 
       {/* Password Tab */}
       {activeTab === 'password' && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-black">
           <form onSubmit={handlePasswordSubmit}>
             <div className="max-w-md space-y-6">
               <div>

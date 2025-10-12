@@ -133,7 +133,7 @@ const MyPayments = () => {
     }
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ">
         <div className="bg-white rounded-lg p-6 w-full max-w-md">
           <h3 className="text-lg font-semibold mb-4">Process Payment</h3>
           
@@ -328,7 +328,7 @@ const MyPayments = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 ">
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-600">Total Payments</p>
           <p className="text-2xl font-bold text-gray-900">{payments.length}</p>
@@ -361,7 +361,7 @@ const MyPayments = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-3 py-2 text-black pr-5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="All">All Status</option>
               <option value="Completed">Completed</option>
@@ -375,7 +375,7 @@ const MyPayments = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-3 py-2 text-black  border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="All">All Types</option>
               <option value="Rent">Rent</option>

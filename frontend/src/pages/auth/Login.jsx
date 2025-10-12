@@ -31,6 +31,10 @@ const Login = () => {
     setIsLoading(true)
 
     const result = await login(formData)
+    // console.log("ohohoh", result)
+
+   localStorage.setItem('currentuser', JSON.stringify(result.user));
+    
     
     if (result.success) {
       // Redirect to intended page or dashboard

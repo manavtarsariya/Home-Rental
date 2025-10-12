@@ -206,16 +206,16 @@ const PropertyDetails = () => {
     navigate(`/tenant/bookings/create/${id}`)
   }
 
-  const handleContactOwner = () => {
-    if (!user) {
-      toast.error('Please login to contact the owner')
-      navigate('/login')
-      return
-    }
-    
-    // Implement contact functionality
-    toast.success('Contact information revealed!')
-  }
+  // const handleContactOwner = () => {
+  //   if (!user) {
+  //     toast.error('Please login to contact the owner')
+  //     navigate('/login')
+  //     return
+  //   }
+
+  //   // Implement contact functionality
+  //   toast.success('Contact information revealed!')
+  // }
 
   const toggleFavorite = () => {
     if (!user) {
@@ -239,33 +239,33 @@ const PropertyDetails = () => {
     }
   }
 
-  const handleScheduleVisit = (e) => {
-    e.preventDefault()
-    if (!user) {
-      toast.error('Please login to schedule a visit')
-      navigate('/login')
-      return
-    }
+  // const handleScheduleVisit = (e) => {
+  //   e.preventDefault()
+  //   if (!user) {
+  //     toast.error('Please login to schedule a visit')
+  //     navigate('/login')
+  //     return
+  //   }
 
-    // Basic validation
-    if (!scheduleData.preferredDate || !scheduleData.contactName || !scheduleData.contactPhone) {
-      toast.error('Please fill all required fields')
-      return
-    }
+  //   // Basic validation
+  //   if (!scheduleData.preferredDate || !scheduleData.contactName || !scheduleData.contactPhone) {
+  //     toast.error('Please fill all required fields')
+  //     return
+  //   }
 
-    // Here you would typically send the data to your backend
-    console.log('Schedule visit data:', scheduleData)
-    toast.success('Visit scheduled successfully! You will receive a confirmation call.')
-    setShowScheduleForm(false)
-    setScheduleData({
-      preferredDate: '',
-      preferredTime: '',
-      contactName: '',
-      contactPhone: '',
-      contactEmail: '',
-      message: ''
-    })
-  }
+  //   // Here you would typically send the data to your backend
+  //   console.log('Schedule visit data:', scheduleData)
+  //   toast.success('Visit scheduled successfully! You will receive a confirmation call.')
+  //   setShowScheduleForm(false)
+  //   setScheduleData({
+  //     preferredDate: '',
+  //     preferredTime: '',
+  //     contactName: '',
+  //     contactPhone: '',
+  //     contactEmail: '',
+  //     message: ''
+  //   })
+  // }
 
   const handleScheduleInputChange = (e) => {
     const { name, value } = e.target
@@ -368,7 +368,7 @@ const PropertyDetails = () => {
                   <MapPinIcon className="w-5 h-5 mr-2 text-primary-600" />
                   <span className="text-lg">{property.address.street}, {property.address.city}, {property.address.state}</span>
                 </div>
-                
+
                 {/* Rating and Reviews */}
                 {averageRating > 0 && (
                   <div className="flex items-center mb-4">
@@ -376,9 +376,8 @@ const PropertyDetails = () => {
                       {[...Array(5)].map((_, i) => (
                         <StarIcon
                           key={i}
-                          className={`w-5 h-5 ${
-                            i < Math.floor(averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                          }`}
+                          className={`w-5 h-5 ${i < Math.floor(averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`}
                         />
                       ))}
                     </div>
@@ -387,7 +386,7 @@ const PropertyDetails = () => {
                     </span>
                   </div>
                 )}
-                
+
                 {/* Property Type and Availability Status */}
                 <div className="flex items-center space-x-3 mb-6">
                   <span className="bg-primary-100 text-primary-800 px-4 py-2 rounded-full font-semibold text-sm">
@@ -405,7 +404,7 @@ const PropertyDetails = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* Action Buttons */}
               <div className="flex space-x-3">
                 <button
@@ -428,42 +427,42 @@ const PropertyDetails = () => {
             </div>
 
             {/* Property Details Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6 ">
               {/* Area */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <CubeIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Area</p>
                 <p className="font-semibold text-gray-900">{property.area} sq ft</p>
               </div>
-              
+
               {/* Bedrooms */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <HomeIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Bedrooms</p>
                 <p className="font-semibold text-gray-900">{property.bedrooms} BHK</p>
               </div>
-              
+
               {/* Bathrooms */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <BuildingOfficeIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Bathrooms</p>
                 <p className="font-semibold text-gray-900">{property.bathrooms}</p>
               </div>
-              
+
               {/* Rent */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <BanknotesIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Monthly Rent</p>
                 <p className="font-semibold text-gray-900">₹{property.rent.toLocaleString()}</p>
               </div>
-              
+
               {/* Security Deposit */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <ShieldCheckIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Security</p>
                 <p className="font-semibold text-gray-900">₹{(property.securityDeposit || property.rent * 2).toLocaleString()}</p>
               </div>
-              
+
               {/* Furnished Status */}
               <div className="bg-gray-50 p-4 rounded-lg text-center">
                 <CheckBadgeIcon className="w-8 h-8 text-primary-600 mx-auto mb-2" />
@@ -487,7 +486,7 @@ const PropertyDetails = () => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <UserIcon className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
@@ -545,7 +544,7 @@ const PropertyDetails = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Google Maps Embed */}
               <div className="h-96 bg-gray-100 relative">
                 {property.location && property.location.latitude && property.location.longitude ? (
@@ -569,7 +568,7 @@ const PropertyDetails = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Map Actions */}
               <div className="p-4 bg-gray-50 flex justify-between items-center">
                 <div className="text-sm text-gray-600">
@@ -711,9 +710,8 @@ const PropertyDetails = () => {
                             {[...Array(5)].map((_, i) => (
                               <StarIcon
                                 key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                }`}
+                                className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                  }`}
                               />
                             ))}
                           </div>
@@ -743,9 +741,66 @@ const PropertyDetails = () => {
         </div>
 
         {/* Enhanced Sidebar */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 ">
           {/* Booking Card */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-24 shadow-lg">
+          {/* <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-24 shadow-lg"> */}
+
+          {/* Enhanced Owner Info */}
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg ">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Owner</h3>
+            {property.owner ? (
+              <>
+                <div className="flex items-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                    {property.owner.name ? property.owner.name.charAt(0).toUpperCase() : 'O'}
+                  </div>
+                  <div className="ml-4">
+                    <p className="font-semibold text-gray-900 text-lg">
+                      {property.owner.name || 'Property Owner'}
+                    </p>
+                    <p className="text-sm text-gray-500">Property Owner</p>
+                    <div className="flex items-center mt-1">
+                      <StarIcon className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="text-sm text-gray-600 ml-1">4.8 (32 reviews)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {user && (
+                  <div className="space-y-3">
+                    {property.owner.email && (
+                      <div className="flex items-center text-gray-600 p-3 bg-gray-50 rounded-lg">
+                        <EnvelopeIcon className="w-5 h-5 mr-3 text-primary-600" />
+                        <span className="text-sm font-medium">{property.owner.email}</span>
+                      </div>
+                    )}
+                    {property.owner.contactNumber && (
+                      <div className="flex items-center text-gray-600 p-3 bg-gray-50 rounded-lg">
+                        <PhoneIcon className="w-5 h-5 mr-3 text-primary-600" />
+                        <span className="text-sm font-medium">{property.owner.contactNumber}</span>
+                      </div>
+                    )}
+                    {!property.owner.email && !property.owner.contactNumber && (
+                      <div className="text-center py-4 bg-yellow-50 rounded-lg">
+                        <p className="text-yellow-700 text-sm">
+                          Contact information will be shared after booking confirmation
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-6 bg-gray-50 rounded-lg">
+                <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500">Owner information not available</p>
+                <p className="text-gray-400 text-sm mt-1">Contact details will be provided upon request</p>
+              </div>
+            )}
+
+
+          </div>
+          <div className="bg-white border mt-6 border-gray-200 rounded-lg p-6 sticky top-24 shadow-lg">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-3xl font-bold text-gray-900">
@@ -779,77 +834,23 @@ const PropertyDetails = () => {
                 >
                   Book Property
                 </button>
-                <button
+                {/* <button
                   onClick={() => setShowScheduleForm(true)}
                   className="w-full border-2 border-primary-600 text-primary-600 py-3 px-4 rounded-lg font-semibold hover:bg-primary-50 transition-colors duration-200"
                 >
                   Schedule Visit
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   onClick={handleContactOwner}
                   className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
                 >
                   Contact Owner
-                </button>
+                </button> */}
               </div>
             ) : (
               <div className="text-center py-6 bg-red-50 rounded-lg">
                 <p className="text-red-600 font-semibold text-lg">Property Not Available</p>
                 <p className="text-sm text-red-500 mt-2">This property is currently rented</p>
-              </div>
-            )}
-          </div>
-
-          {/* Enhanced Owner Info */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6 mt-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Property Owner</h3>
-            {property.owner ? (
-              <>
-                <div className="flex items-center mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                    {property.owner.name ? property.owner.name.charAt(0).toUpperCase() : 'O'}
-                  </div>
-                  <div className="ml-4">
-                    <p className="font-semibold text-gray-900 text-lg">
-                      {property.owner.name || 'Property Owner'}
-                    </p>
-                    <p className="text-sm text-gray-500">Property Owner</p>
-                    <div className="flex items-center mt-1">
-                      <StarIcon className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600 ml-1">4.8 (32 reviews)</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {user && (
-                  <div className="space-y-3">
-                    {property.owner.email && (
-                      <div className="flex items-center text-gray-600 p-3 bg-gray-50 rounded-lg">
-                        <EnvelopeIcon className="w-5 h-5 mr-3 text-primary-600" />
-                        <span className="text-sm font-medium">{property.owner.email}</span>
-                      </div>
-                    )}
-                    {property.owner.contactNumber && (
-                      <div className="flex items-center text-gray-600 p-3 bg-gray-50 rounded-lg">
-                        <PhoneIcon className="w-5 h-5 mr-3 text-primary-600" />
-                        <span className="text-sm font-medium">{property.owner.contactNumber}</span>
-                      </div>
-                    )}
-                    {!property.owner.email && !property.owner.contactNumber && (
-                      <div className="text-center py-4 bg-yellow-50 rounded-lg">
-                        <p className="text-yellow-700 text-sm">
-                          Contact information will be shared after booking confirmation
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-6 bg-gray-50 rounded-lg">
-                <UserIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500">Owner information not available</p>
-                <p className="text-gray-400 text-sm mt-1">Contact details will be provided upon request</p>
               </div>
             )}
           </div>
@@ -861,8 +862,8 @@ const PropertyDetails = () => {
         <div className="mt-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Similar Properties</h2>
-            <Link 
-              to="/properties" 
+            <Link
+              to="/properties"
               className="text-primary-600 hover:text-primary-500 font-medium flex items-center"
             >
               View all properties
@@ -871,7 +872,7 @@ const PropertyDetails = () => {
               </svg>
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {similarProperties.map((similarProperty) => (
               <div key={similarProperty._id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -891,7 +892,7 @@ const PropertyDetails = () => {
                       <HomeIcon className="w-16 h-16 text-gray-400" />
                     </div>
                   )}
-                  
+
                   {similarProperty.isAvailable ? (
                     <span className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                       Available
@@ -902,7 +903,7 @@ const PropertyDetails = () => {
                     </span>
                   )}
                 </div>
-                
+
                 {/* Property Details */}
                 <div className="p-4">
                   <div className="mb-3">
@@ -914,7 +915,7 @@ const PropertyDetails = () => {
                       {similarProperty.address.city}, {similarProperty.address.state}
                     </p>
                   </div>
-                  
+
                   {/* Property Stats */}
                   <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
                     <span className="bg-primary-100 text-primary-800 px-2 py-1 rounded font-medium">
@@ -926,7 +927,7 @@ const PropertyDetails = () => {
                       <span>{similarProperty.area} sq ft</span>
                     </div>
                   </div>
-                  
+
                   {/* Price and Action */}
                   <div className="flex items-center justify-between">
                     <div>
@@ -949,152 +950,155 @@ const PropertyDetails = () => {
         </div>
       )}
 
-      {/* Schedule Visit Modal */}
-      {showScheduleForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900">Schedule a Visit</h3>
-                <button
-                  onClick={() => setShowScheduleForm(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      {false && (
+        <div>
+          {/* Schedule Visit Modal */}
+          {showScheduleForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Schedule a Visit</h3>
+                    <button
+                      onClick={() => setShowScheduleForm(false)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <form className="space-y-4 text-black">
+                    {/* Preferred Date */}
+                    <div>
+                      <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 mb-2">
+                        Preferred Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        id="preferredDate"
+                        name="preferredDate"
+                        value={scheduleData.preferredDate}
+                        onChange={handleScheduleInputChange}
+                        min={new Date().toISOString().split('T')[0]}
+                        className=" w-full  px-3 py-2 border  border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        required
+                      />
+                    </div>
+
+                    {/* Preferred Time */}
+                    <div>
+                      <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-2">
+                        Preferred Time
+                      </label>
+                      <select
+                        id="preferredTime"
+                        name="preferredTime"
+                        value={scheduleData.preferredTime}
+                        onChange={handleScheduleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      >
+                        <option value="">Select time</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                      </select>
+                    </div>
+
+                    {/* Contact Name */}
+                    <div>
+                      <label htmlFor="contactName" className="block text-sm font-medium text-gray-700 mb-2">
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="contactName"
+                        name="contactName"
+                        value={scheduleData.contactName}
+                        onChange={handleScheduleInputChange}
+                        placeholder="Enter your full name"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        required
+                      />
+                    </div>
+
+                    {/* Contact Phone */}
+                    <div>
+                      <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700 mb-2">
+                        Phone Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        id="contactPhone"
+                        name="contactPhone"
+                        value={scheduleData.contactPhone}
+                        onChange={handleScheduleInputChange}
+                        placeholder="Enter your phone number"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        required
+                      />
+                    </div>
+
+                    {/* Contact Email */}
+                    <div>
+                      <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="contactEmail"
+                        name="contactEmail"
+                        value={scheduleData.contactEmail}
+                        onChange={handleScheduleInputChange}
+                        placeholder="Enter your email address"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+
+                    {/* Message */}
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                        Additional Message
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={scheduleData.message}
+                        onChange={handleScheduleInputChange}
+                        placeholder="Any specific requirements or questions?"
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+
+                    {/* Form Actions */}
+                    <div className="flex space-x-3 pt-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowScheduleForm(false)}
+                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
+                      >
+                        Schedule Visit
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
-
-              <form onSubmit={handleScheduleVisit} className="space-y-4">
-                {/* Preferred Date */}
-                <div>
-                  <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="preferredDate"
-                    name="preferredDate"
-                    value={scheduleData.preferredDate}
-                    onChange={handleScheduleInputChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    required
-                  />
-                </div>
-
-                {/* Preferred Time */}
-                <div>
-                  <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Time
-                  </label>
-                  <select
-                    id="preferredTime"
-                    name="preferredTime"
-                    value={scheduleData.preferredTime}
-                    onChange={handleScheduleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Select time</option>
-                    <option value="09:00">9:00 AM</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="14:00">2:00 PM</option>
-                    <option value="15:00">3:00 PM</option>
-                    <option value="16:00">4:00 PM</option>
-                    <option value="17:00">5:00 PM</option>
-                  </select>
-                </div>
-
-                {/* Contact Name */}
-                <div>
-                  <label htmlFor="contactName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="contactName"
-                    name="contactName"
-                    value={scheduleData.contactName}
-                    onChange={handleScheduleInputChange}
-                    placeholder="Enter your full name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    required
-                  />
-                </div>
-
-                {/* Contact Phone */}
-                <div>
-                  <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    id="contactPhone"
-                    name="contactPhone"
-                    value={scheduleData.contactPhone}
-                    onChange={handleScheduleInputChange}
-                    placeholder="Enter your phone number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    required
-                  />
-                </div>
-
-                {/* Contact Email */}
-                <div>
-                  <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="contactEmail"
-                    name="contactEmail"
-                    value={scheduleData.contactEmail}
-                    onChange={handleScheduleInputChange}
-                    placeholder="Enter your email address"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  />
-                </div>
-
-                {/* Message */}
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Additional Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={scheduleData.message}
-                    onChange={handleScheduleInputChange}
-                    placeholder="Any specific requirements or questions?"
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  />
-                </div>
-
-                {/* Form Actions */}
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowScheduleForm(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
-                  >
-                    Schedule Visit
-                  </button>
-                </div>
-              </form>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </div>)}
     </div>
   )
 }
