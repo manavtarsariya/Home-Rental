@@ -58,7 +58,7 @@ function App() {
                 {/* Public Pages */}
                 <Route index element={<Home />} />
                 <Route path="properties" element={<BrowseProperties />} />
-                <Route path="properties/:id" element={<PropertyDetails />} />
+                <Route path="properties/:id"  element={<PropertyDetails />} />
 
                 {/* User Profile Routes - Any authenticated user */}
                 <Route path="profile" element={

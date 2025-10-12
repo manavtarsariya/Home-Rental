@@ -107,7 +107,7 @@ export function AuthProvider({ children }) {
       })
       
       toast.success(`Welcome back, ${user.name}!`)
-      return { success: true }
+      return { user, success: true }
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Login failed'
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage })

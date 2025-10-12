@@ -41,7 +41,7 @@ const Sidebar = () => {
           { icon: UserGroupIcon, label: 'Manage Users', path: '/admin/users' },
           { icon: BuildingOfficeIcon, label: 'Manage Properties', path: '/admin/properties' },
           { icon: CalendarIcon, label: 'Manage Bookings', path: '/admin/bookings' },
-          { icon: ChartBarIcon, label: 'Analytics', path: '/admin/analytics' },
+          // { icon: ChartBarIcon, label: 'Analytics', path: '/admin/analytics' },
         ]
       
       case 'Owner':
@@ -50,8 +50,8 @@ const Sidebar = () => {
           { icon: BuildingOfficeIcon, label: 'My Properties', path: '/owner/properties' },
           { icon: PlusIcon, label: 'Add Property', path: '/owner/properties/add' },
           { icon: CalendarIcon, label: 'Bookings', path: '/owner/bookings' },
-          { icon: CurrencyRupeeIcon, label: 'Payments', path: '/owner/payments' },
-          { icon: ChartBarIcon, label: 'Analytics', path: '/owner/analytics' },
+          // { icon: CurrencyRupeeIcon, label: 'Payments', path: '/owner/payments' },
+          // { icon: ChartBarIcon, label: 'Analytics', path: '/owner/analytics' },
         ]
       
       case 'Tenant':
@@ -59,7 +59,7 @@ const Sidebar = () => {
           { icon: HomeIcon, label: 'Dashboard', path: '/tenant/dashboard' },
           { icon: EyeIcon, label: 'Browse Properties', path: '/properties' },
           { icon: CalendarIcon, label: 'My Bookings', path: '/tenant/bookings' },
-          { icon: CurrencyRupeeIcon, label: 'My Payments', path: '/tenant/payments' },
+          // { icon: CurrencyRupeeIcon, label: 'My Payments', path: '/tenant/payments' },
           { icon: StarIcon, label: 'My Reviews', path: '/tenant/feedback' },
         ]
       

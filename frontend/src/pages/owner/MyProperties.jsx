@@ -163,13 +163,13 @@ const MyProperties = () => {
           </span>
           
           <div className="flex space-x-2">
-            <Link
+            {/* <Link
               to={`/properties/${property._id}`}
               className="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
               title="View Property"
             >
               <EyeIcon className="w-4 h-4" />
-            </Link>
+            </Link> */}
             
             <Link
               to={`/owner/properties/${property._id}/edit`}
@@ -218,7 +218,7 @@ const MyProperties = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 text-black">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -239,7 +239,7 @@ const MyProperties = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-8 text-sm py-2.5 items-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="All">All Status</option>
               <option value="Available">Available</option>
@@ -254,7 +254,7 @@ const MyProperties = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="px-8 text-sm py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="All">All Types</option>
               {getUniqueTypes().map(type => (

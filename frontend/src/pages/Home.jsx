@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { propertyService } from '../services/propertyService';
 import {
@@ -142,18 +142,31 @@ const Home = () => {
   const [search, setSearch] = useState({ city: '', budget: '', type: '' });
   const [faqOpen, setFaqOpen] = useState(null);
 
+  const currentUserStr = localStorage.getItem('currentuser');
+  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+  const navigate = useNavigate()
+
+  // if(currentUser.role === "Owner"){
+  //   navigate("/owner/dashboard")
+  // }
+
   useEffect(() => {
+    if (currentUser.role === "Owner") {
+      navigate("/owner/dashboard")
+    }else if( currentUser.role === "Admin"){
+      navigate("/admin/dashboard")
+      }
     const fetchProperties = async () => {
       try {
         const response = await propertyService.getProperties();
-        console.log('Fetched properties:', response.data);
-  setFeatured((response.data || []).slice(0, 3));
+        // console.log('Fetched properties:', response.data);
+        setFeatured((response.data || []).slice(0, 3));
       } catch {
         setFeatured([]);
       }
     };
     fetchProperties();
-  }, []);
+  }, [currentUser.role, navigate]);
 
   const handleSearchChange = e => {
     setSearch({ ...search, [e.target.name]: e.target.value });
