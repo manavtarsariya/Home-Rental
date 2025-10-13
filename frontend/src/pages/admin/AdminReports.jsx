@@ -4,15 +4,6 @@ import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { ExclamationTriangleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 
-const statusBadge = (status) => {
-  const map = {
-    Open: 'bg-red-100 text-red-800',
-    Reviewed: 'bg-yellow-100 text-yellow-800',
-    Resolved: 'bg-green-100 text-green-800',
-  }
-  return map[status] || 'bg-gray-100 text-gray-800'
-}
-
 const AdminReports = () => {
   const [loading, setLoading] = useState(true)
   const [reports, setReports] = useState([])
@@ -23,8 +14,10 @@ const AdminReports = () => {
       setLoading(true)
       const res = await reportService.getReports()
       // Expecting { success, data } structure based on other services
+      console.log('Reports API Response:', res) // Debug log
       setReports(res.data || res)
     } catch (err) {
+      console.error('Error fetching reports:', err) // Debug log
       toast.error(err?.response?.data?.message || 'Failed to load reports')
     } finally {
       setLoading(false)
@@ -37,13 +30,13 @@ const AdminReports = () => {
 
   const [showReportModal, setShowReportModal] = useState(false)
   const [selectedReport, setSelectedReport] = useState(null)
-  const [actionStatus, setActionStatus] = useState('')
+  const [action, setAction] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
-  const statusOptions = [
-    { value: 'Open', label: 'Open', color: 'bg-red-100 text-red-800' },
-    { value: 'Reviewed', label: 'Reviewed', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'Resolved', label: 'Resolved', color: 'bg-green-100 text-green-800' },
+  const actionOptions = [
+    { value: 'Ignore', label: 'Ignore', color: 'bg-red-100 text-red-800' },
+    { value: 'Remove_Property', label: 'Remove Property', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'Remove_Owner', label: 'Remove Owner', color: 'bg-green-100 text-green-800' },
   ]
 
   const filtered = reports.filter((r) => {
@@ -52,23 +45,36 @@ const AdminReports = () => {
   })
 
   const handleRowClick = (report) => {
+    console.log('Selected Report:', report) // Debug log
     setSelectedReport(report)
-    setActionStatus(report.status || 'Open')
+    // Only set to 'Ignore' or '' if action is not one of the valid options
+    const validActions = ['Ignore', 'Remove_Property', 'Remove_Owner']
+    if (validActions.includes(report.action)) {
+      setAction(report.action)
+    } else {
+      setAction('')
+    }
     setShowReportModal(true)
   }
 
   const handleCloseModal = () => {
     setShowReportModal(false)
     setSelectedReport(null)
-    setActionStatus('')
+    setAction('')
   }
 
   const handleTakeAction = async () => {
-    if (!selectedReport || !actionStatus) return
+    if (!selectedReport) return
+    if (action === '') {
+      toast.error('Please select an action')
+      return
+    }
     try {
       setActionLoading(true)
-      await reportService.updateReportStatus(selectedReport._id, actionStatus)
-      toast.success('Report status updated')
+      await reportService.updateReportStatus(selectedReport._id, {
+        action: action
+      })
+      toast.success('Report action taken')
       handleCloseModal()
       fetchReports()
     } catch (err) {
@@ -76,6 +82,12 @@ const AdminReports = () => {
     } finally {
       setActionLoading(false)
     }
+  }
+
+  const actionBadge = (status) => {
+    if (status === 'Pending') return 'bg-red-100 text-red-800';
+    if (status === 'Reviewed') return 'bg-green-100 text-green-800';
+    return 'bg-gray-100 text-gray-800';
   }
 
   if (loading) {
@@ -132,8 +144,8 @@ const AdminReports = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r?.owner?.name || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r?.reporter?.name || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${statusBadge(r.status)}`}>
-                        {r.status || 'Open'}
+                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${actionBadge(r.status)}`}>
+                        {r.status || 'Pending'}
                       </span>
                     </td>
                   </tr>
@@ -278,9 +290,9 @@ const AdminReports = () => {
                   <div className="font-medium text-gray-900">{selectedReport?.reporter?.name || '-'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Status</span>
-                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${statusBadge(selectedReport.status)}`}>
-                    {selectedReport.status || 'Open'}
+                  <span className="text-sm text-gray-500">Action</span>
+                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${actionBadge(selectedReport.action)}`}>
+                    {selectedReport.action || 'Ignore'}
                   </span>
                 </div>
               </div>
@@ -289,13 +301,14 @@ const AdminReports = () => {
                 <div className="text-gray-700">{selectedReport.details}</div>
               </div>
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Update Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Actions</label>
                 <select
-                  value={actionStatus}
-                  onChange={e => setActionStatus(e.target.value)}
+                  value={action}
+                  onChange={e => setAction(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900"
                 >
-                  {statusOptions.map(opt => (
+                  <option key='' value=''>Select Action</option>
+                  {actionOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>

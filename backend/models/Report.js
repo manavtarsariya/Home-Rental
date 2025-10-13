@@ -26,8 +26,13 @@ const reportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Reviewed', 'Resolved'],
+    enum: ['Pending', 'Reviewed'],
     default: 'Pending'
+  },
+  action: {
+    type: String,
+    enum: ['Ignore', 'Remove_Property', 'Remove_Owner'],
+    required: false
   },
   createdAt: {
     type: Date,

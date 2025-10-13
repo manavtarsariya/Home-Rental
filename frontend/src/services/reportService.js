@@ -15,15 +15,15 @@ export const reportService = {
   },
 
   // Get reports (admin only). Optional query params can be passed via payload
-  getReports: async (payload = {}) => {
+  getReports: async () => {
     // axios GET uses params for querystring
-    const response = await API.get('/reports', { params: payload })
+    const response = await API.get('/reports')
     return response
   },
 
   // Update report status
-  updateReportStatus: async (reportId, status) => {
-    const response = await API.patch(`/reports/${reportId}/status`, { status })
+  updateReportStatus: async (reportId, action) => {
+    const response = await API.patch(`/reports/takeaction/${reportId}`, { action })
     return response
   },
 }
