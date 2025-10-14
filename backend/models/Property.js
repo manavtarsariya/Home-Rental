@@ -52,6 +52,10 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please add monthly rent amount']
   },
+  predictedRent: {
+    type: Number,
+    default: null // Can be set later using a rent prediction service
+  },
   securityDeposit: {
     type: Number,
     default: function() {

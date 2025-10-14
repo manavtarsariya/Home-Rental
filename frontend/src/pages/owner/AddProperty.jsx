@@ -11,8 +11,49 @@ import {
   CurrencyRupeeIcon
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 const AddProperty = () => {
+  // Locality state for Surat
+  const [mainLocality, setMainLocality] = useState('')
+  // Prediction states
+  const [predicting, setPredicting] = useState(false)
+  const [predictedRent, setPredictedRent] = useState(null)
+  const [predictedRange, setPredictedRange] = useState([null, null])
+  const [predictError, setPredictError] = useState('')
+  const [predictionDone, setPredictionDone] = useState(false)
+
+  // Predict Price API call
+  const handlePredictPrice = async () => {
+    setPredicting(true)
+    setPredictError('')
+    setPredictionDone(false)
+    try {
+      // Prepare FormData for prediction
+      const fd = new FormData()
+      fd.append('BHK', formData.bedrooms)
+      fd.append('Main_Locality', mainLocality || formData.address.city)
+      fd.append('Sqft', formData.area)
+
+      console.log('Predicting with:', fd)
+
+      // Use axios for prediction API call
+      const response = await axios.post('http://127.0.0.1:5000/predict', fd)
+      // Backend returns only predicted price (number)
+      const predicted = typeof response.data === 'number' ? response.data : parseFloat(response.data)
+      setPredictedRent(predicted)
+      // Calculate range ±10%
+      const min = Math.round(predicted * 0.9)
+      const max = Math.round(predicted * 1.1)
+      setPredictedRange([min, max])
+      setFormData(prev => ({ ...prev, rent: predicted }))
+      setPredictionDone(true)
+    } catch (err) {
+      setPredictError('Could not predict price. Please check details and try again.')
+    } finally {
+      setPredicting(false)
+    }
+  }
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [photos, setPhotos] = useState([])
@@ -152,7 +193,7 @@ const AddProperty = () => {
   const furnishedOptions = ['Fully Furnished', 'Semi Furnished', 'Unfurnished']
   const tenantPreferences = ['Family', 'Bachelor', 'Company', 'Any']
   const amenitiesList = [
-    'Parking', 'Swimming Pool', 'Gym', 'Garden', 'Balcony', 
+    'Parking', 'Swimming Pool', 'Gym', 'Garden', 'Balcony',
     'AC', 'Furnished', 'WiFi', 'Security', 'Elevator',
     'Power Backup', 'Water Supply', 'Maintenance', 'Pet Friendly'
   ]
@@ -174,7 +215,7 @@ const AddProperty = () => {
         [name]: value
       }))
     }
-    
+
     // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({
@@ -195,7 +236,7 @@ const AddProperty = () => {
 
   const handlePhotosChange = (e) => {
     const files = Array.from(e.target.files)
-    
+
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
         toast.error(`${file.name} is not a valid image file`)
@@ -235,7 +276,7 @@ const AddProperty = () => {
 
   const handleDocumentsChange = (e) => {
     const files = Array.from(e.target.files)
-    
+
     const validFiles = files.filter(file => {
       const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       if (!allowedTypes.includes(file.type)) {
@@ -314,7 +355,7 @@ const AddProperty = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error('Please fix all errors before submitting')
       return
@@ -336,11 +377,12 @@ const AddProperty = () => {
       formDataToSend.append('bathrooms', formData.bathrooms)
       formDataToSend.append('furnished', formData.furnished)
       formDataToSend.append('preferredTenants', formData.preferredTenants)
-      
+      formDataToSend.append('predictedRent', predictedRent)
+
       if (formData.securityDeposit) {
         formDataToSend.append('securityDeposit', formData.securityDeposit)
       }
-      
+
       if (formData.availableFrom) {
         formDataToSend.append('availableFrom', formData.availableFrom)
       }
@@ -362,7 +404,7 @@ const AddProperty = () => {
       })
 
       const response = await propertyService.createPropertyWithFormData(formDataToSend)
-      
+
       toast.success('Property added successfully!')
       navigate('/owner/properties')
     } catch (error) {
@@ -389,7 +431,7 @@ const AddProperty = () => {
         {/* Basic Information */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -400,9 +442,8 @@ const AddProperty = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.title ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.title ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="e.g., Modern 2BHK Apartment in Bandra"
               />
               {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
@@ -433,49 +474,12 @@ const AddProperty = () => {
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.area ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.area ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="1200"
                 min="1"
               />
               {errors.area && <p className="text-red-500 text-sm mt-1">{errors.area}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Monthly Rent (₹) *
-              </label>
-              <div className="relative">
-                <CurrencyRupeeIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
-                <input
-                  type="number"
-                  name="rent"
-                  value={formData.rent}
-                  onChange={handleChange}
-                  className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                    errors.rent ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="25000"
-                  min="1"
-                />
-              </div>
-              {errors.rent && <p className="text-red-500 text-sm mt-1">{errors.rent}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Security Deposit (₹)
-              </label>
-              <input
-                type="number"
-                name="securityDeposit"
-                value={formData.securityDeposit}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="50000 (Optional - defaults to 2x rent)"
-                min="0"
-              />
             </div>
 
             <div>
@@ -487,9 +491,8 @@ const AddProperty = () => {
                 name="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.bedrooms ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.bedrooms ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="2"
                 min="0"
               />
@@ -505,9 +508,8 @@ const AddProperty = () => {
                 name="bathrooms"
                 value={formData.bathrooms}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.bathrooms ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.bathrooms ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="2"
                 min="0"
               />
@@ -555,9 +557,8 @@ const AddProperty = () => {
                 name="availableFrom"
                 value={formData.availableFrom}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.availableFrom ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.availableFrom ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
               {errors.availableFrom && <p className="text-red-500 text-sm mt-1">{errors.availableFrom}</p>}
             </div>
@@ -571,9 +572,8 @@ const AddProperty = () => {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors.description ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.description ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Describe your property in detail..."
               />
               {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
@@ -591,21 +591,20 @@ const AddProperty = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Street Address *
+                Address *
               </label>
               <input
                 type="text"
                 name="address.street"
                 value={formData.address.street}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors['address.street'] ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.street'] ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="123 Main Street, Building Name"
               />
               {errors['address.street'] && <p className="text-red-500 text-sm mt-1">{errors['address.street']}</p>}
             </div>
-           
+
 
             {/* Country Select */}
             <div>
@@ -616,7 +615,7 @@ const AddProperty = () => {
                 onChange={e => setSelectedCountryId(e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.country'] ? 'border-red-300' : 'border-gray-300'}`}
               >
-                <option value="">Select Country</option>
+                <option value="">-- Select Country --</option>
                 {countryOptions.map(country => (
                   <option key={country.id} value={country.id}>{country.name}</option>
                 ))}
@@ -635,7 +634,7 @@ const AddProperty = () => {
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.state'] ? 'border-red-300' : 'border-gray-300'}`}
                   disabled={!stateOptions.length}
                 >
-                  <option value="">Select State</option>
+                  <option value="">-- Select State --</option>
                   {stateOptions.map(state => (
                     <option key={state.id} value={state.id}>{state.name}</option>
                   ))}
@@ -646,22 +645,52 @@ const AddProperty = () => {
 
             {/* City Select (show only if state selected) */}
             {selectedStateId && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">District / City *</label>
-                <select
-                  name="address.city"
-                  value={selectedCityId}
-                  onChange={e => setSelectedCityId(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.city'] ? 'border-red-300' : 'border-gray-300'}`}
-                  disabled={!cityOptions.length}
-                >
-                  <option value="">Select City</option>
-                  {cityOptions.map(city => (
-                    <option key={city.id} value={city.id}>{city.name}</option>
-                  ))}
-                </select>
-                {errors['address.city'] && <p className="text-red-500 text-sm mt-1">{errors['address.city']}</p>}
-              </div>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">District / City *</label>
+                  <select
+                    name="address.city"
+                    value={selectedCityId}
+                    onChange={e => setSelectedCityId(e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.city'] ? 'border-red-300' : 'border-gray-300'}`}
+                    disabled={!cityOptions.length}
+                  >
+                    <option value="">-- Select City --</option>
+                    {cityOptions.map(city => (
+                      <option key={city.id} value={city.id}>{city.name}</option>
+                    ))}
+                  </select>
+                  {errors['address.city'] && <p className="text-red-500 text-sm mt-1">{errors['address.city']}</p>}
+                </div>
+
+                {/* Locality Select: show after city is selected */}
+                {formData.address.city && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Locality *</label>
+                    <select
+                      name="Main_Locality"
+                      value={mainLocality}
+                      onChange={e => setMainLocality(e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="">-- Select Locality --</option>
+                      {formData.address.city === 'Surat' && (
+                        <>
+                          <option value="pal">Pal</option>
+                          <option value="palanpur">Palanpur</option>
+                          <option value="vesu">Vesu</option>
+                          <option value="adajan">Adajan</option>
+                          <option value="bhatar">Bhatar</option>
+                          <option value="varachha">Varachha</option>
+                          <option value="udhna">Udhna</option>
+                          <option value="katargam">Katargam</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Zip Code Last */}
@@ -674,9 +703,8 @@ const AddProperty = () => {
                 name="address.zipCode"
                 value={formData.address.zipCode}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  errors['address.zipCode'] ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors['address.zipCode'] ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="400001"
                 pattern="[0-9]{6}"
                 maxLength="6"
@@ -689,7 +717,7 @@ const AddProperty = () => {
         {/* Amenities */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Amenities</h2>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {amenitiesList.map(amenity => (
               <label key={amenity} className="flex items-center">
@@ -705,12 +733,77 @@ const AddProperty = () => {
           </div>
         </div>
 
+        {/* Predict Price Button & Info */}
+        <div className='mb-6'>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              disabled={predicting}
+              onClick={handlePredictPrice}
+            >
+              {predicting ? 'Predicting...' : 'Predict Price'}
+            </button>
+            {!predictionDone && (
+              <span className="text-gray-500 text-sm">(Predict price before setting rent)</span>
+            )}
+          </div>
+          {predictedRent !== null && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-700 font-semibold">Predicted Rent: ₹{predictedRent}</p>
+              <p className="text-blue-600 text-sm">Suggested Range: ₹{predictedRange[0]} - ₹{predictedRange[1]}</p>
+            </div>
+          )}
+          {predictError && (
+            <p className="text-red-500 mt-2">{predictError}</p>
+          )}
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Monthly Rent (₹) *
+            </label>
+            <div className="relative">
+              <CurrencyRupeeIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
+              <input
+                type="number"
+                name="rent"
+                value={formData.rent}
+                onChange={handleChange}
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.rent ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                placeholder="25000"
+                min="1"
+                disabled={!predictionDone}
+              />
+            </div>
+            {errors.rent && <p className="text-red-500 text-sm mt-1">{errors.rent}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Security Deposit (₹)
+            </label>
+            <input
+              type="number"
+              name="securityDeposit"
+              value={formData.securityDeposit}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="50000 (Optional - defaults to 2x rent)"
+              min="0"
+              disabled={!predictionDone}
+            />
+          </div>
+        </div>
+
         {/* Photos */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
             Property Photos *
           </h2>
-          
+
           <div className="mb-4">
             <input
               type="file"
@@ -760,7 +853,7 @@ const AddProperty = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
             Documents (Optional)
           </h2>
-          
+
           <div className="mb-4">
             <input
               type="file"

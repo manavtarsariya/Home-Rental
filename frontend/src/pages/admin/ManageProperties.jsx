@@ -232,7 +232,24 @@ const ManageProperties = () => {
                 </div>
                 <div className="flex items-center text-primary-600 font-semibold">
                   <CurrencyRupeeIcon className="w-4 h-4 mr-1" />
-                  <span>₹{property.rent?.toLocaleString()}/month</span>
+                  <span className="text-lg font-semibold">₹{property.rent?.toLocaleString()}/month</span>
+                  {/* Predicted Price (colored) */}
+                  {typeof property.predictedRent === 'number' && !isNaN(property.predictedRent) && (
+                    (() => {
+                      const predicted = property.predictedRent;
+                      const min = Math.round(predicted * 0.9);
+                      const max = Math.round(predicted * 1.1);
+                      let color = 'text-green-600';
+                      if (property.rent < min) color = 'text-yellow-500';
+                      else if (property.rent > max) color = 'text-red-600';
+                      return (
+                        <span className={`ml-3 px-3 py-1 rounded-full text-lg font-semibold bg-gray-100 border ${color}`}
+                              style={{borderColor: color.replace('text-', '')}}>
+                          Predicted: ₹{predicted.toLocaleString()}
+                        </span>
+                      );
+                    })()
+                  )}
                 </div>
               </div>
 

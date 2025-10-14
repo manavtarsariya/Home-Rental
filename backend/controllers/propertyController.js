@@ -64,6 +64,7 @@ const createProperty = async (req, res) => {
     }
 
     // Convert numeric fields
+    propertyData.predictedRent = Number(propertyData.predictedRent);
     propertyData.rent = Number(propertyData.rent)
     propertyData.area = Number(propertyData.area)
     propertyData.bedrooms = Number(propertyData.bedrooms)

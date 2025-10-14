@@ -322,6 +322,8 @@ const PropertyDetails = () => {
     }))
   }
 
+  // ...existing code...
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -342,6 +344,24 @@ const PropertyDetails = () => {
       </div>
     )
   }
+
+  // Predicted Rent Box logic (safe after property is loaded)
+  const predictedRent = property.predictedRent;
+  const actualRent = property.rent;
+  const min = typeof predictedRent === 'number' ? Math.round(predictedRent * 0.9) : null;
+  const max = typeof predictedRent === 'number' ? Math.round(predictedRent * 1.1) : null;
+  const getRentStatus = (rent, min, max) => {
+    if (min === null || max === null) return null;
+    if (rent < min) return 'low';
+    if (rent > max) return 'high';
+    return 'ok';
+  };
+  const rentStatus = getRentStatus(actualRent, min, max);
+  const boxStyles = {
+    ok: 'bg-green-50 border-green-300 text-green-800',
+    low: 'bg-yellow-50 border-yellow-300 text-yellow-800',
+    high: 'bg-red-50 border-red-300 text-red-800',
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -472,6 +492,19 @@ const PropertyDetails = () => {
                 </button>
               </div>
             </div>
+
+            {/* Predicted Rent Box */}
+            {typeof predictedRent === 'number' && !isNaN(predictedRent) && (
+              <div className={`rounded-xl border px-6 py-4 mb-6 flex flex-col items-center ${boxStyles[rentStatus]}`}
+                   style={{maxWidth: 400, margin: '0 auto'}}>
+                <div className="font-bold text-lg">Predicted Rent: ₹{predictedRent.toLocaleString()}</div>
+                <div className="text-sm mb-2">Suggested Range: ₹{min.toLocaleString()} - ₹{max.toLocaleString()}</div>
+                <div className="font-semibold">Actual Rent: ₹{actualRent.toLocaleString()}</div>
+                {rentStatus === 'ok' && <div className="mt-2 text-green-600">Within suggested range</div>}
+                {rentStatus === 'low' && <div className="mt-2 text-yellow-600">Lower than suggested range</div>}
+                {rentStatus === 'high' && <div className="mt-2 text-red-600">Higher than suggested range</div>}
+              </div>
+            )}
 
             {/* Property Details Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6 ">
@@ -610,7 +643,7 @@ const PropertyDetails = () => {
                     <div className="text-center">
                       <MapPinIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-500 text-lg">Location details not available</p>
-                      <p className="text-gray-400 text-sm mt-2">Map will be displayed when coordinates are provided</p>
+                      <p className="text-gray-400 text-sm mt-1">Map will be displayed when coordinates are provided</p>
                     </div>
                   </div>
                 )}
