@@ -626,7 +626,7 @@ const PropertyDetails = () => {
               </div>
 
               {/* Google Maps Embed */}
-              <div className="h-96 bg-gray-100 relative">
+              {/* <div className="h-96 bg-gray-100 relative">
                 {property.location && property.location.latitude && property.location.longitude ? (
                   <iframe
                     src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${property.location.latitude},${property.location.longitude}&zoom=15`}
@@ -647,10 +647,10 @@ const PropertyDetails = () => {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Map Actions */}
-              <div className="p-4 bg-gray-50 flex justify-between items-center">
+              {/* <div className="p-4 bg-gray-50 flex justify-between items-center">
                 <div className="text-sm text-gray-600">
                   <span>Get directions and explore the neighborhood</span>
                 </div>
@@ -670,7 +670,7 @@ const PropertyDetails = () => {
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -999,98 +999,6 @@ const PropertyDetails = () => {
       </div>
 
       {/* Similar Properties Section */}
-      {similarProperties.length > 0 && (
-        <div className="mt-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Similar Properties</h2>
-            <Link
-              to="/properties"
-              className="text-primary-600 hover:text-primary-500 font-medium flex items-center"
-            >
-              View all properties
-              <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {similarProperties.map((similarProperty) => (
-              <div key={similarProperty._id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                {/* Property Image */}
-                <div className="relative h-48 bg-gray-200">
-                  {similarProperty.photos && similarProperty.photos.length > 0 ? (
-                    <img
-                      src={similarProperty.photos[0].url || `/uploads/properties/${similarProperty.photos[0].filename}`}
-                      alt={similarProperty.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/placeholder.png'
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                      <HomeIcon className="w-16 h-16 text-gray-400" />
-                    </div>
-                  )}
-
-                  {similarProperty.isAvailable ? (
-                    <span className="absolute top-3 left-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      Available
-                    </span>
-                  ) : (
-                    <span className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      Rented
-                    </span>
-                  )}
-                </div>
-
-                {/* Property Details */}
-                <div className="p-4">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
-                      {similarProperty.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <MapPinIcon className="w-4 h-4 mr-1" />
-                      {similarProperty.address.city}, {similarProperty.address.state}
-                    </p>
-                  </div>
-
-                  {/* Property Stats */}
-                  <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
-                    <span className="bg-primary-100 text-primary-800 px-2 py-1 rounded font-medium">
-                      {similarProperty.type}
-                    </span>
-                    <div className="flex space-x-3">
-                      <span>{similarProperty.bedrooms} BHK</span>
-                      <span>{similarProperty.bathrooms} Bath</span>
-                      <span>{similarProperty.area} sq ft</span>
-                    </div>
-                  </div>
-
-                  {/* Price and Action */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-2xl font-bold text-gray-900">
-                        ₹{similarProperty.rent.toLocaleString()}
-                      </span>
-                      <span className="text-gray-500 text-sm">/ month</span>
-                    </div>
-                    <Link
-                      to={`/properties/${similarProperty._id}`}
-                      className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors duration-200"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {false && (
         <div>
           {/* Schedule Visit Modal */}

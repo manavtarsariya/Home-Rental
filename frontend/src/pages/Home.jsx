@@ -23,7 +23,7 @@ const dummyCities = [
   { name: 'Bangalore', image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=400&q=80' },
   { name: 'Pune', image: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80' },
   { name: 'Hyderabad', image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80' },
-  { name: 'Chennai', image: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80' },
+  { name: 'Chennai', image: 'https://images.unsplash.com/photo-1570553305204-149983b3d081?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y2hlbm5haXxlbnwwfHwwfHx8MA%3D%3D' },
 ];
 
 const features = [
@@ -100,19 +100,19 @@ const blogPosts = [
   {
     title: '5 Tips for First-Time Renters',
     image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=400&q=80',
-    excerpt: 'Renting for the first time? Here are 5 essential tips to help you find the perfect home.',
+    excerpt: ' Set a realistic budget, research locations, prepare documents, inspect thoroughly, and read your lease carefully before signing.',
     link: '#'
   },
   {
     title: 'How to List Your Property Effectively',
     image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80',
-    excerpt: 'Maximize your property’s visibility and attract quality tenants with these listing strategies.',
+    excerpt: 'Use high-quality photos, write detailed descriptions, price competitively, highlight unique amenities.',
     link: '#'
   },
   {
     title: 'Understanding Rental Agreements',
-    image: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
-    excerpt: 'A quick guide to understanding the key clauses in your rental agreement.',
+    image: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cm9vbXxlbnwwfHwwfHx8MA%3D%3D',
+    excerpt: ' Lease duration, rent amount & due date, security deposit, maintenance responsibilities, and early termination conditions.',
     link: '#'
   }
 ];
@@ -190,7 +190,7 @@ const Home = () => {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-700 to-blue-900 min-h-[480px] flex items-center">
+      <section className="relative bg-gradient-to-r from-blue-700 to-blue-900 min-h-[380px] flex items-center">
         <div className="absolute inset-0 bg-black opacity-40"></div>
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 py-20 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-lg">
@@ -200,7 +200,7 @@ const Home = () => {
             Discover, connect, and rent from thousands of verified properties across India.
           </p>
           {/* Search Bar */}
-          <form className="w-full max-w-3xl bg-white/90 rounded-xl shadow-lg flex flex-col md:flex-row gap-2 md:gap-0 p-4 md:p-2 mb-4" onSubmit={e => { e.preventDefault(); window.location.href = `/properties?city=${search.city}&budget=${search.budget}&type=${search.type}`; }}>
+          {/* <form className="w-full max-w-3xl bg-white/90 rounded-xl shadow-lg flex flex-col md:flex-row gap-2 md:gap-0 p-4 md:p-2 mb-4" onSubmit={e => { e.preventDefault(); window.location.href = `/properties?city=${search.city}&budget=${search.budget}&type=${search.type}`; }}>
             <div className="flex-1 flex items-center px-2">
               <HomeModernIcon className="w-5 h-5 text-blue-500 mr-2" />
               <input name="city" value={search.city} onChange={handleSearchChange} className="w-full bg-transparent outline-none text-gray-800" placeholder="Enter city (e.g. Mumbai)" />
@@ -219,10 +219,10 @@ const Home = () => {
             <button type="submit" className="flex items-center justify-center bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg ml-0 md:ml-2 mt-2 md:mt-0 transition-colors">
               <MagnifyingGlassIcon className="w-5 h-5 mr-2" /> Search
             </button>
-          </form>
+          </form> */}
           <div className="flex gap-4 mt-2">
             <Link to="/properties" className="text-white underline hover:text-blue-200">Browse All Properties</Link>
-            {!user && <Link to="/register" className="text-white underline hover:text-blue-200">List Your Property</Link>}
+            {/* {!user && <Link to="/register" className="text-white underline hover:text-blue-200">List Your Property</Link>} */}
           </div>
         </div>
       </section>
@@ -242,7 +242,7 @@ const Home = () => {
       </section>
 
       {featured.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2">
           {featured.map(property => <PropertyCard key={property._id} property={property} />)}
         </div>
       ) : (
@@ -345,7 +345,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Latest Guides & Tips</h2>
-            <Link to="#" className="text-blue-700 font-semibold hover:underline">View All</Link>
+            {/* <Link to="#" className="text-blue-700 font-semibold hover:underline">View All</Link> */}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {blogPosts.map((post, i) => (
@@ -354,7 +354,7 @@ const Home = () => {
                 <div className="p-4 flex-1 flex flex-col">
                   <div className="text-lg font-bold text-gray-900 mb-2">{post.title}</div>
                   <div className="text-gray-600 mb-4">{post.excerpt}</div>
-                  <a href={post.link} className="mt-auto inline-block text-blue-700 font-semibold hover:underline">Read More</a>
+                  {/* <a href={post.link} className="mt-auto inline-block text-blue-700 font-semibold hover:underline">Read More</a> */}
                 </div>
               </div>
             ))}
@@ -387,7 +387,7 @@ const Home = () => {
           <p className="text-xl text-blue-100 mb-8">Join thousands of satisfied users who found their perfect rental property.</p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Link to="/properties" className="inline-block bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-100 transition-colors">Find a Home</Link>
-            <Link to={user ? "/owner/add-property" : "/register"} className="inline-block bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-700 transition-colors">List a Property</Link>
+            {/* <Link to={user ? "/owner/add-property" : "/register"} className="inline-block bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-700 transition-colors">List a Property</Link> */}
           </div>
         </div>
       </section>

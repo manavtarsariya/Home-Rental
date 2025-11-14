@@ -1,8 +1,6 @@
 {
   "countries": [
-    { "id": 1, "name": "India" },
-    { "id": 2, "name": "United States" },
-    { "id": 3, "name": "United Kingdom" }
+    { "id": 1, "name": "India" }
   ],
   "states": [
     { "id": 101, "country_id": 1, "name": "Maharashtra" },
