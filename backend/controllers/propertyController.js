@@ -142,6 +142,7 @@ const getProperties = async (req, res) => {
     const {
       page = 1,
       limit = 10,
+      title,
       city,
       state,
       type,
@@ -158,6 +159,14 @@ const getProperties = async (req, res) => {
     const filter = {
      status: 'Approved',
       isAvailable: true
+    }
+
+    // Search by title
+    if (title) {
+      filter.$or = [
+        { title: new RegExp(title, 'i') },
+        { description: new RegExp(title, 'i') }
+      ]
     }
 
     if (city) filter['address.city'] = new RegExp(city, 'i')

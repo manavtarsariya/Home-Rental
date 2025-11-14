@@ -83,6 +83,13 @@ const BrowseProperties = () => {
     })()
   }, [selectedStateId])
 
+  // Handle search button click
+  const handleSearch = () => {
+    setFilters(prev => ({ ...prev, title: tempFilters.search }))
+    const params = new URLSearchParams(searchParams)
+    setSearchParams(params)
+  }
+
   // Apply tempFilters to real filters (with names)
   const applyFilters = () => {
     const applied = { ...tempFilters }
@@ -111,8 +118,20 @@ const BrowseProperties = () => {
 
   // Clear filters
   const clearFilters = () => {
-    setTempFilters(initialFilters)
-    setFilters(initialFilters)
+    const resetFilters = {
+      search: '',
+      country: '',
+      state: '',
+      city: '',
+      type: '',
+      minRent: '',
+      maxRent: '',
+      bedrooms: '',
+      furnished: '',
+      amenities: '',
+    }
+    setTempFilters(resetFilters)
+    setFilters(resetFilters)
     setSelectedCountryId('')
     setSelectedStateId('')
     setSelectedCityId('')
@@ -126,7 +145,6 @@ const BrowseProperties = () => {
 
   // Fetch properties (only when filters change)
   const fetchProperties = useCallback(async () => {
-     if (properties.length > 0) return
     try {
       setLoading(true)
       const apiParams = {}
@@ -157,14 +175,6 @@ const BrowseProperties = () => {
     fetchProperties()
   }, [fetchProperties])
 
-  // Debounced search for instant search without spamming API
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setFilters(prev => ({ ...prev, search: tempFilters.search }))
-    }, 500)
-    return () => clearTimeout(handler)
-  }, [tempFilters.search])
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -187,7 +197,7 @@ const BrowseProperties = () => {
               />
             </div>
             <div className="flex space-x-2">
-              <button type="button" onClick={applyFilters} className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200">
+              <button type="button" onClick={handleSearch} className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200">
                 Search
               </button>
               <button type="button" onClick={() => setShowFilters(!showFilters)} className="border text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center">
